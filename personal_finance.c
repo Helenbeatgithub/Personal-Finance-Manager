@@ -2,20 +2,24 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define INCOME_TRANSACTION 100
+#define EXPENSE_TRANSACTION 100
+
 enum Type {Income, Expense};
+enum Category {Groceries, Utilities, Rent, Salary, Transportation, Dining};
 
 struct Transaction {
     int year;
     int month;
     int day;
     enum Type type;
-    char* category;
+    enum Type category;
     char* description;
     float amount;
 };
 
 struct Transaction* createTransaction(int year, int month, int day,
-        enum Type type, char* category, char* description, float amount) {
+        enum Type type, enum Type category, char* description, float amount) {
         struct Transaction* newTransaction = (struct Transaction*) malloc(sizeof(struct Transaction));
         newTransaction->year = year;
         newTransaction->month = month;
@@ -30,27 +34,48 @@ struct Transaction* createTransaction(int year, int month, int day,
 struct PersonalFinance {
     float income;
     float expense;
-    int transactionCount;
-    struct Transaction transactions[];
+    int incomeCount;
+    int expenseCount;
+    struct Transaction transaction_Expense[EXPENSE_TRANSACTION];
+    struct Transaction transaction_Income[INCOME_TRANSACTION];
 };
 
 struct PersonalFinance* createPersonalFinance() {
     struct PersonalFinance* newPersonalFinance = (struct PersonalFinance*)malloc(sizeof(struct PersonalFinance));
     newPersonalFinance->income = 0;
     newPersonalFinance->expense = 0;
-    newPersonalFinance->transactionCount = 0;
+    newPersonalFinance->incomeCount = 0;
+    newPersonalFinance->expenseCount= 0;
 }
 
-void addTransaction(struct PersonalFinance *pf, struct Transaction t) {
+void addTransaction(struct PersonalFinance *pf, struct Transaction* t) {
+    if (t->type == "Income") {
+        pf->transaction_Income[pf->incomeCount] = *t;
+        pf->income += t->amount;
+        pf->incomeCount += 1;
+    }
+    else {
+        pf->transaction_Expense[pf->expenseCount] = *t;
+        pf->expense += t->amount;
+        pf->expenseCount += 1;
+    }
+}
+
+void viewTransactions(struct PersonalFinance *pf) {
 
 }
 
-struct Transaction* viewTransactions(struct PersonalFinance pf) {
-
-}
 
 float viewBalance(struct PersonalFinance pf) {
     return pf.income - pf.expense;
+}
+
+void sortTransactionByAmount(struct PersonalFinance *pf) {
+    
+    
+}
+void sortTransactionByDate(struct PersonalFinance *pf) {
+
 }
 
 void saveData(struct PersonalFinance pf) {
