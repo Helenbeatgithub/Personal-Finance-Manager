@@ -62,7 +62,14 @@ void addTransaction(struct PersonalFinance *pf, struct Transaction* t) {
 }
 
 void viewTransactions(struct PersonalFinance *pf) {
-
+    printf("Income Transactions:\n");
+    for (int i = 0; i < pf->incomeCount; i++) {
+        printf("Date: %d/%d/%d\n", pf->transaction_Income[i].year, pf->transaction_Income[i].month, pf->transaction_Income[i].day);
+        printf("Type: Income\n");
+        printf("Category: %d\n", pf->transaction_Income[i].category);
+        printf("Description: %s\n", pf->transaction_Income[i].description);
+        printf("Amount: $%.2f\n\n", pf->transaction_Income[i].amount);
+    }
 }
 
 
