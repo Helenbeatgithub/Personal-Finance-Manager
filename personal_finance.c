@@ -78,9 +78,35 @@ float viewBalance(struct PersonalFinance pf) {
 }
 
 void sortTransactionByAmount(struct PersonalFinance *pf) {
+    int i, j;
+    int n = pf->incomeCount;
     
-    
+    // Sort Income Transactions using Bubble Sort
+    for (i = 0; i < n - 1; i++) {
+        for (j = 0; j < n - i - 1; j++) {
+            if (pf->transaction_Income[j].amount > pf->transaction_Income[j + 1].amount) {
+                // Swap the transactions
+                struct Transaction temp = pf->transaction_Income[j];
+                pf->transaction_Income[j] = pf->transaction_Income[j + 1];
+                pf->transaction_Income[j + 1] = temp;
+            }
+        }
+    }
+
+    // Sort Expense Transactions using Bubble Sort
+    n = pf->expenseCount;
+    for (i = 0; i < n - 1; i++) {
+        for (j = 0; j < n - i - 1; j++) {
+            if (pf->transaction_Expense[j].amount > pf->transaction_Expense[j + 1].amount) {
+                // Swap the transactions
+                struct Transaction temp = pf->transaction_Expense[j];
+                pf->transaction_Expense[j] = pf->transaction_Expense[j + 1];
+                pf->transaction_Expense[j + 1] = temp;
+            }
+        }
+    }
 }
+
 void sortTransactionByDate(struct PersonalFinance *pf) {
 
 }
