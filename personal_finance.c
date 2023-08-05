@@ -77,6 +77,8 @@ float viewBalance(struct PersonalFinance pf) {
     return pf.income - pf.expense;
 }
 
+
+
 void sortTransactionByAmount(struct PersonalFinance *pf) {
     int i, j;
     int n = pf->incomeCount;
@@ -107,9 +109,57 @@ void sortTransactionByAmount(struct PersonalFinance *pf) {
     }
 }
 
-void sortTransactionByDate(struct PersonalFinance *pf) {
 
+
+void sortTransactionByDate(struct PersonalFinance *pf) {
+    int i, j;
+    int n = pf->incomeCount;
+
+    // Sort Income Transactions using Selection Sort
+    for (i = 0; i < n - 1; i++) {
+        int min_idx = i;
+        for (j = i + 1; j < n; j++) {
+            if (compareDates(pf->transaction_Income[j], pf->transaction_Income[min_idx]) < 0) {
+                min_idx = j;
+            }
+        }
+        if (min_idx != i) {
+            // Swap the transactions
+            struct Transaction temp = pf->transaction_Income[i];
+            pf->transaction_Income[i] = pf->transaction_Income[min_idx];
+            pf->transaction_Income[min_idx] = temp;
+        }
+    }
+
+    // Sort Expense Transactions using Selection Sort
+    n = pf->expenseCount;
+    for (i = 0; i < n - 1; i++) {
+        int min_idx = i;
+        for (j = i + 1; j < n; j++) {
+            if (compareDates(pf->transaction_Expense[j], pf->transaction_Expense[min_idx]) < 0) {
+                min_idx = j;
+            }
+        }
+        if (min_idx != i) {
+            // Swap the transactions
+            struct Transaction temp = pf->transaction_Expense[i];
+            pf->transaction_Expense[i] = pf->transaction_Expense[min_idx];
+            pf->transaction_Expense[min_idx] = temp;
+        }
+    }
 }
+
+// Helper function to compare two dates (earlier date < later date)
+int compareDates(struct Transaction t1, struct Transaction t2) {
+    if (t1.year != t2.year) {
+        return t1.year - t2.year;
+    }
+    if (t1.month != t2.month) {
+        return t1.month - t2.month;
+    }
+    return t1.day - t2.day;
+}
+
 
 void saveData(struct PersonalFinance pf) {
 
