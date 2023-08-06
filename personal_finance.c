@@ -18,16 +18,17 @@ struct Transaction {
     float amount;
 };
 
-struct Transaction* initTransaction(struct Transaction* t, int year, int month, int day,
+struct Transaction* createTransaction(int year, int month, int day,
         enum Type type, enum Category category, char* description, float amount) {
-    t->year = year;
-    t->month = month;
-    t->day = day;
-    t->type = type;
-    t->category = category;
-    t->description = strdup(description);
-    t->amount = amount;
-    return t;
+        struct Transaction* newTransaction = (struct Transaction*) malloc(sizeof(struct Transaction));
+        newTransaction->year = year;
+        newTransaction->month = month;
+        newTransaction->day = day;
+        newTransaction->type = type;
+        newTransaction->category = category;
+        newTransaction->description = strdup(description);
+        newTransaction->amount = amount;
+        return newTransaction;
 }
 
 struct PersonalFinance {
@@ -50,15 +51,15 @@ struct PersonalFinance* createPersonalFinance() {
 }
 
 void addTransaction(struct PersonalFinance *pf, struct Transaction* t) {
-    if (t->type == Income) {  // use the enum directly for comparison
+    if (t->type == Income) {
         pf->transaction_Income[pf->incomeCount] = *t;
         pf->income += t->amount;
-        pf->incomeCount++;
+        pf->incomeCount += 1;
     }
     else {
         pf->transaction_Expense[pf->expenseCount] = *t;
         pf->expense += t->amount;
-        pf->expenseCount++;
+        pf->expenseCount += 1;
     }
 }
 
@@ -220,7 +221,8 @@ void loadData(struct PersonalFinance *pf, const char* filename) {
     for (int i = 0; i < pf->incomeCount; i++) {
         char description[255];
         struct Transaction t;
-        fscanf(file, "%d %d %d %d %d %254s %f\n", &t.year, &t.month, &t.day, (int*)&t.type, (int*)&t.category, description, &t.amount);
+        fscanf(file, "%d %d %d %d %d %253s %f\n", 
+               &t.year, &t.month, &t.day, (int*)&t.type, (int*)&t.category, description, &t.amount);
         t.description = strdup(description);
         pf->transaction_Income[i] = t;
     }
@@ -230,13 +232,15 @@ void loadData(struct PersonalFinance *pf, const char* filename) {
     for (int i = 0; i < pf->expenseCount; i++) {
         char description[255];
         struct Transaction t;
-        fscanf(file, "%d %d %d %d %d %254s %f\n", &t.year, &t.month, &t.day, (int*)&t.type, (int*)&t.category, description, &t.amount);
+        fscanf(file, "%d %d %d %d %d %253s %f\n", 
+               &t.year, &t.month, &t.day, (int*)&t.type, (int*)&t.category, description, &t.amount);
         t.description = strdup(description);
         pf->transaction_Expense[i] = t;
     }
 
     fclose(file);
 }
+
 
 int main() {
     struct PersonalFinance *pf = createPersonalFinance();
