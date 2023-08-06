@@ -13,7 +13,7 @@ struct Transaction {
     int month;
     int day;
     enum Type type;
-    enum Type category;
+    enum Category category;
     char* description;
     float amount;
 };
@@ -26,7 +26,7 @@ struct Transaction* createTransaction(int year, int month, int day,
         newTransaction->day = day;
         newTransaction->type = type;
         newTransaction->category = category;
-        newTransaction->description = description;
+        newTransaction->description = strdup(description);  // Use strdup to duplicate the string
         newTransaction->amount = amount;
         return newTransaction;
 }
@@ -46,6 +46,8 @@ struct PersonalFinance* createPersonalFinance() {
     newPersonalFinance->expense = 0;
     newPersonalFinance->incomeCount = 0;
     newPersonalFinance->expenseCount= 0;
+
+    return newPersonalFinance;  // Return the created structure
 }
 
 void addTransaction(struct PersonalFinance *pf, struct Transaction* t) {
@@ -77,7 +79,20 @@ float viewBalance(struct PersonalFinance pf) {
     return pf.income - pf.expense;
 }
 
+void freeTransaction(struct Transaction* t) {
+    free(t->description);
+    free(t);
+}
 
+void freePersonalFinance(struct PersonalFinance* pf) {
+    for (int i = 0; i < pf->incomeCount; i++) {
+        freeTransaction(&pf->transaction_Income[i]);
+    }
+    for (int i = 0; i < pf->expenseCount; i++) {
+        freeTransaction(&pf->transaction_Expense[i]);
+    }
+    free(pf);
+}
 
 void sortTransactionByAmount(struct PersonalFinance *pf) {
     int i, j;
