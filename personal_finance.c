@@ -161,14 +161,110 @@ int compareDates(struct Transaction t1, struct Transaction t2) {
 }
 
 
-void saveData(struct PersonalFinance pf) {
+// Function to save financial data to a file
+void saveData(struct PersonalFinance pf, const char* filename) {
+    FILE *file = fopen(filename, "w");
+    if (file == NULL) {
+        printf("Error opening the file for writing\n");
+        return;
+    }
 
+    // Save income and expense data
+    fprintf(file, "%f %f\n", pf.income, pf.expense);
+    
+    // Save income transactions
+    fprintf(file, "%d\n", pf.incomeCount);
+    for (int i = 0; i < pf.incomeCount; i++) {
+        struct Transaction t = pf.transaction_Income[i];
+        fprintf(file, "%d %d %d %d %d %s %f\n", t.year, t.month, t.day, t.type, t.category, t.description, t.amount);
+    }
+
+    // Save expense transactions
+    fprintf(file, "%d\n", pf.expenseCount);
+    for (int i = 0; i < pf.expenseCount; i++) {
+        struct Transaction t = pf.transaction_Expense[i];
+        fprintf(file, "%d %d %d %d %d %s %f\n", t.year, t.month, t.day, t.type, t.category, t.description, t.amount);
+    }
+
+    fclose(file);
 }
 
-void loadData(struct PersonalFinance pf) {
 
+// Function to load financial data from a file
+void loadData(struct PersonalFinance *pf, const char* filename) {
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        printf("Error opening the file for reading\n");
+        return;
+    }
+
+    // Load income and expense data
+    fscanf(file, "%f %f\n", &pf->income, &pf->expense);
+    
+    // Load income transactions
+    fscanf(file, "%d\n", &pf->incomeCount);
+    for (int i = 0; i < pf->incomeCount; i++) {
+        char description[255];
+        struct Transaction t;
+        fscanf(file, "%d %d %d %d %d %254s %f\n", &t.year, &t.month, &t.day, (int*)&t.type, (int*)&t.category, description, &t.amount);
+        t.description = strdup(description);
+        pf->transaction_Income[i] = t;
+    }
+
+    // Load expense transactions
+    fscanf(file, "%d\n", &pf->expenseCount);
+    for (int i = 0; i < pf->expenseCount; i++) {
+        char description[255];
+        struct Transaction t;
+        fscanf(file, "%d %d %d %d %d %254s %f\n", &t.year, &t.month, &t.day, (int*)&t.type, (int*)&t.category, description, &t.amount);
+        t.description = strdup(description);
+        pf->transaction_Expense[i] = t;
+    }
+
+    fclose(file);
 }
 
 int main() {
+    struct PersonalFinance *pf = createPersonalFinance();
+
+    // Add some transactions
+    struct Transaction *t1 = createTransaction(2023, 7, 25, Income, Salary, "July Salary", 2000.0);
+    addTransaction(pf, t1);
+
+    struct Transaction *t2 = createTransaction(2023, 7, 26, Expense, Groceries, "Grocery Shopping", -100.0);
+    addTransaction(pf, t2);
+
+    struct Transaction *t3 = createTransaction(2023, 7, 27, Expense, Utilities, "Electricity Bill", -50.0);
+    addTransaction(pf, t3);
+
+    printf("Before saving:\n");
+    viewTransactions(pf);
+
+    saveData(*pf, "finance_data.txt");
+
+    // Empty the transactions for now to simulate loading from a file
+    pf->incomeCount = 0;
+    pf->expenseCount = 0;
+
+    loadData(pf, "finance_data.txt");
+
+    printf("\nAfter loading from file:\n");
+    viewTransactions(pf);
+
+    float balance = viewBalance(*pf);
+    printf("Current Balance: $%.2f\n", balance);
+
+    // Free up the allocated memory
+    free(t1->description);
+    free(t1);
+
+    free(t2->description);
+    free(t2);
+
+    free(t3->description);
+    free(t3);
+
+    free(pf);
+
     return 0;
 }
