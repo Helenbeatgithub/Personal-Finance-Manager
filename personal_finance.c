@@ -18,17 +18,16 @@ struct Transaction {
     float amount;
 };
 
-struct Transaction* createTransaction(int year, int month, int day,
-        enum Type type, enum Type category, char* description, float amount) {
-        struct Transaction* newTransaction = (struct Transaction*) malloc(sizeof(struct Transaction));
-        newTransaction->year = year;
-        newTransaction->month = month;
-        newTransaction->day = day;
-        newTransaction->type = type;
-        newTransaction->category = category;
-        newTransaction->description = strdup(description);  // Use strdup to duplicate the string
-        newTransaction->amount = amount;
-        return newTransaction;
+struct Transaction* initTransaction(struct Transaction* t, int year, int month, int day,
+        enum Type type, enum Category category, char* description, float amount) {
+    t->year = year;
+    t->month = month;
+    t->day = day;
+    t->type = type;
+    t->category = category;
+    t->description = strdup(description);
+    t->amount = amount;
+    return t;
 }
 
 struct PersonalFinance {
@@ -51,15 +50,15 @@ struct PersonalFinance* createPersonalFinance() {
 }
 
 void addTransaction(struct PersonalFinance *pf, struct Transaction* t) {
-    if (t->type == "Income") {
+    if (t->type == Income) {  // use the enum directly for comparison
         pf->transaction_Income[pf->incomeCount] = *t;
         pf->income += t->amount;
-        pf->incomeCount += 1;
+        pf->incomeCount++;
     }
     else {
         pf->transaction_Expense[pf->expenseCount] = *t;
         pf->expense += t->amount;
-        pf->expenseCount += 1;
+        pf->expenseCount++;
     }
 }
 
@@ -242,15 +241,17 @@ void loadData(struct PersonalFinance *pf, const char* filename) {
 int main() {
     struct PersonalFinance *pf = createPersonalFinance();
 
-    // Add some transactions
-    struct Transaction *t1 = createTransaction(2023, 7, 25, Income, Salary, "July Salary", 2000.0);
-    addTransaction(pf, t1);
+    // Initialize transactions
+    struct Transaction t1, t2, t3;
 
-    struct Transaction *t2 = createTransaction(2023, 7, 26, Expense, Groceries, "Grocery Shopping", -100.0);
-    addTransaction(pf, t2);
+    initTransaction(&t1, 2023, 7, 25, Income, Salary, "July Salary", 2000.0);
+    addTransaction(pf, &t1);
 
-    struct Transaction *t3 = createTransaction(2023, 7, 27, Expense, Utilities, "Electricity Bill", -50.0);
-    addTransaction(pf, t3);
+    initTransaction(&t2, 2023, 7, 26, Expense, Groceries, "Grocery Shopping", -100.0);
+    addTransaction(pf, &t2);
+
+    initTransaction(&t3, 2023, 7, 27, Expense, Utilities, "Electricity Bill", -50.0);
+    addTransaction(pf, &t3);
 
     printf("Before saving:\n");
     viewTransactions(pf);
@@ -270,16 +271,7 @@ int main() {
     printf("Current Balance: $%.2f\n", balance);
 
     // Free up the allocated memory
-    free(t1->description);
-    free(t1);
-
-    free(t2->description);
-    free(t2);
-
-    free(t3->description);
-    free(t3);
-
-    free(pf);
+    freePersonalFinance(pf);
 
     return 0;
 }
