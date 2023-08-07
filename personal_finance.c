@@ -4,6 +4,7 @@
 
 #define INCOME_TRANSACTION 100
 #define EXPENSE_TRANSACTION 100
+#define DESC_MAX_LENGTH 255
 
 enum Type {Income, Expense};
 enum Category {Groceries, Utilities, Rent, Salary, Transportation, Dining};
@@ -14,21 +15,22 @@ struct Transaction {
     int day;
     enum Type type;
     enum Category category;
-    char* description;
+    char description[DESC_MAX_LENGTH];
     float amount;
 };
 
-struct Transaction* createTransaction(int year, int month, int day,
-        enum Type type, enum Category category, char* description, float amount) {
-        struct Transaction* newTransaction = (struct Transaction*) malloc(sizeof(struct Transaction));
-        newTransaction->year = year;
-        newTransaction->month = month;
-        newTransaction->day = day;
-        newTransaction->type = type;
-        newTransaction->category = category;
-        newTransaction->description = strdup(description);
-        newTransaction->amount = amount;
-        return newTransaction;
+struct Transaction createTransaction(int year, int month, int day,
+        enum Type type, enum Category category, const char* description, float amount) {
+    struct Transaction newTransaction;
+    newTransaction.year = year;
+    newTransaction.month = month;
+    newTransaction.day = day;
+    newTransaction.type = type;
+    newTransaction.category = category;
+    strncpy(newTransaction.description, description, DESC_MAX_LENGTH - 1);
+    newTransaction.description[DESC_MAX_LENGTH - 1] = '\0';  // Ensure null-terminated
+    newTransaction.amount = amount;
+    return newTransaction;
 }
 
 struct PersonalFinance {
@@ -40,30 +42,28 @@ struct PersonalFinance {
     struct Transaction transaction_Income[INCOME_TRANSACTION];
 };
 
-struct PersonalFinance* createPersonalFinance() {
-    struct PersonalFinance* newPersonalFinance = (struct PersonalFinance*)malloc(sizeof(struct PersonalFinance));
-    newPersonalFinance->income = 0;
-    newPersonalFinance->expense = 0;
-    newPersonalFinance->incomeCount = 0;
-    newPersonalFinance->expenseCount= 0;
-
-    return newPersonalFinance;  // Return the created structure
+struct PersonalFinance createPersonalFinance() {
+    struct PersonalFinance newPersonalFinance;
+    newPersonalFinance.income = 0;
+    newPersonalFinance.expense = 0;
+    newPersonalFinance.incomeCount = 0;
+    newPersonalFinance.expenseCount= 0;
+    return newPersonalFinance;
 }
 
-void addTransaction(struct PersonalFinance *pf, struct Transaction* t) {
-    if (t->type == Income) {
-        pf->transaction_Income[pf->incomeCount] = *t;
-        pf->income += t->amount;
-        pf->incomeCount += 1;
-    }
-    else {
-        pf->transaction_Expense[pf->expenseCount] = *t;
-        pf->expense += t->amount;
-        pf->expenseCount += 1;
+void addTransaction(struct PersonalFinance *pf, struct Transaction t) {
+    if (t.type == Income) {
+        pf->transaction_Income[pf->incomeCount] = t;
+        pf->income += t.amount;
+        pf->incomeCount++;
+    } else {
+        pf->transaction_Expense[pf->expenseCount] = t;
+        pf->expense += t.amount;
+        pf->expenseCount++;
     }
 }
 
-void viewTransactions(struct PersonalFinance *pf) {
+void viewTransactions(const struct PersonalFinance *pf) {
     printf("Income Transactions:\n");
     for (int i = 0; i < pf->incomeCount; i++) {
         printf("Date: %d/%d/%d\n", pf->transaction_Income[i].year, pf->transaction_Income[i].month, pf->transaction_Income[i].day);
@@ -72,11 +72,18 @@ void viewTransactions(struct PersonalFinance *pf) {
         printf("Description: %s\n", pf->transaction_Income[i].description);
         printf("Amount: $%.2f\n\n", pf->transaction_Income[i].amount);
     }
+    printf("Expense Transactions:\n");
+    for (int i = 0; i < pf->expenseCount; i++) {
+        printf("Date: %d/%d/%d\n", pf->transaction_Expense[i].year, pf->transaction_Expense[i].month, pf->transaction_Expense[i].day);
+        printf("Type: Expense\n");
+        printf("Category: %d\n", pf->transaction_Expense[i].category);
+        printf("Description: %s\n", pf->transaction_Expense[i].description);
+        printf("Amount: $%.2f\n\n", pf->transaction_Expense[i].amount);
+    }
 }
 
-
-float viewBalance(struct PersonalFinance pf) {
-    return pf.income - pf.expense;
+float viewBalance(const struct PersonalFinance *pf) {
+    return pf->income - pf->expense;
 }
 
 void freeTransaction(struct Transaction* t) {
@@ -86,13 +93,14 @@ void freeTransaction(struct Transaction* t) {
 
 void freePersonalFinance(struct PersonalFinance* pf) {
     for (int i = 0; i < pf->incomeCount; i++) {
-        freeTransaction(&pf->transaction_Income[i]);
+        free(pf->transaction_Income[i].description);
     }
     for (int i = 0; i < pf->expenseCount; i++) {
-        freeTransaction(&pf->transaction_Expense[i]);
+        free(pf->transaction_Expense[i].description);
     }
     free(pf);
 }
+
 
 void sortTransactionByAmount(struct PersonalFinance *pf) {
     int i, j;
@@ -243,19 +251,17 @@ void loadData(struct PersonalFinance *pf, const char* filename) {
 
 
 int main() {
-    struct PersonalFinance *pf = createPersonalFinance();
+    struct PersonalFinance pf = createPersonalFinance();
 
     // Initialize transactions
-    struct Transaction t1, t2, t3;
+    struct Transaction t1 = createTransaction(2023, 7, 25, Income, Salary, "July Salary", 2000.0);
+    addTransaction(&pf, t1);
 
-    initTransaction(&t1, 2023, 7, 25, Income, Salary, "July Salary", 2000.0);
-    addTransaction(pf, &t1);
+    struct Transaction t2 = createTransaction(2023, 7, 26, Expense, Groceries, "Grocery Shopping", -100.0);
+    addTransaction(&pf, t2);
 
-    initTransaction(&t2, 2023, 7, 26, Expense, Groceries, "Grocery Shopping", -100.0);
-    addTransaction(pf, &t2);
-
-    initTransaction(&t3, 2023, 7, 27, Expense, Utilities, "Electricity Bill", -50.0);
-    addTransaction(pf, &t3);
+    struct Transaction t3 = createTransaction(2023, 7, 27, Expense, Utilities, "Electricity Bill", -50.0);
+    addTransaction(&pf, t3);
 
     printf("Before saving:\n");
     viewTransactions(pf);
