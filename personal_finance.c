@@ -227,27 +227,24 @@ void loadData(struct PersonalFinance *pf, const char* filename) {
     // Load income transactions
     fscanf(file, "%d\n", &pf->incomeCount);
     for (int i = 0; i < pf->incomeCount; i++) {
-        char description[255];
         struct Transaction t;
         fscanf(file, "%d %d %d %d %d %253s %f\n", 
-               &t.year, &t.month, &t.day, (int*)&t.type, (int*)&t.category, description, &t.amount);
-        t.description = strdup(description);
+               &t.year, &t.month, &t.day, (int*)&t.type, (int*)&t.category, t.description, &t.amount);
         pf->transaction_Income[i] = t;
     }
 
     // Load expense transactions
     fscanf(file, "%d\n", &pf->expenseCount);
     for (int i = 0; i < pf->expenseCount; i++) {
-        char description[255];
         struct Transaction t;
         fscanf(file, "%d %d %d %d %d %253s %f\n", 
-               &t.year, &t.month, &t.day, (int*)&t.type, (int*)&t.category, description, &t.amount);
-        t.description = strdup(description);
+               &t.year, &t.month, &t.day, (int*)&t.type, (int*)&t.category, t.description, &t.amount);
         pf->transaction_Expense[i] = t;
     }
 
     fclose(file);
 }
+
 
 
 int main() {
