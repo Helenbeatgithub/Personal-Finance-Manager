@@ -176,11 +176,11 @@ void sortTransactionByDate(struct PersonalFinance *pf) {
 int compareDates(struct Transaction t1, struct Transaction t2) {
     if (t1.year != t2.year) {
         return t1.year - t2.year;
-    }
-    if (t1.month != t2.month) {
+    } else if (t1.month != t2.month) {
         return t1.month - t2.month;
+    } else {
+        return t1.day - t2.day;
     }
-    return t1.day - t2.day;
 }
 
 
@@ -221,6 +221,7 @@ void loadData(struct PersonalFinance *pf, const char* filename) {
         return;
     }
 
+    
     // Load income and expense data
     fscanf(file, "%f %f\n", &pf->income, &pf->expense);
     
@@ -250,35 +251,22 @@ void loadData(struct PersonalFinance *pf, const char* filename) {
 int main() {
     struct PersonalFinance pf = createPersonalFinance();
 
-    // Initialize transactions
-    struct Transaction t1 = createTransaction(2023, 7, 25, Income, Salary, "July Salary", 2000.0);
-    addTransaction(&pf, t1);
+    // Use &pf to pass a pointer to the struct where required
+    viewTransactions(&pf);
+    saveData(&pf, "finance_data.txt");
 
-    struct Transaction t2 = createTransaction(2023, 7, 26, Expense, Groceries, "Grocery Shopping", -100.0);
-    addTransaction(&pf, t2);
+    // Directly modify the struct for resetting counts
+    pf.incomeCount = 0;
+    pf.expenseCount = 0;
 
-    struct Transaction t3 = createTransaction(2023, 7, 27, Expense, Utilities, "Electricity Bill", -50.0);
-    addTransaction(&pf, t3);
+    loadData(&pf, "finance_data.txt");
+    viewTransactions(&pf);
 
-    printf("Before saving:\n");
-    viewTransactions(pf);
-
-    saveData(*pf, "finance_data.txt");
-
-    // Empty the transactions for now to simulate loading from a file
-    pf->incomeCount = 0;
-    pf->expenseCount = 0;
-
-    loadData(pf, "finance_data.txt");
-
-    printf("\nAfter loading from file:\n");
-    viewTransactions(pf);
-
-    float balance = viewBalance(*pf);
+    float balance = viewBalance(&pf);
     printf("Current Balance: $%.2f\n", balance);
 
-    // Free up the allocated memory
-    freePersonalFinance(pf);
+    // The freePersonalFinance function was not provided in the initial code, and may not be needed if dynamic allocation isn't being used. Remove the call or provide the function definition.
+    // freePersonalFinance(&pf);
 
     return 0;
 }
