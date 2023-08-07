@@ -4,18 +4,14 @@
 
 #define INCOME_TRANSACTION 100
 #define EXPENSE_TRANSACTION 100
-#define DESC_MAX_LENGTH 255
-
-enum Type {Income, Expense};
-enum Category {Groceries, Utilities, Rent, Salary, Transportation, Dining};
+#define DESC_MAX_LENGTH 50
 
 struct Transaction {
     int year;
     int month;
     int day;
-    enum Type type;
-    enum Category category;
-    char description[DESC_MAX_LENGTH];
+    char type[DESC_MAX_LENGTH];
+    char category[DESC_MAX_LENGTH];
     float amount;
 };
 
@@ -38,6 +34,8 @@ struct PersonalFinance {
     float expense;
     int incomeCount;
     int expenseCount;
+    int incomeIndex;
+    int expenseIndex;
     struct Transaction transaction_Expense[EXPENSE_TRANSACTION];
     struct Transaction transaction_Income[INCOME_TRANSACTION];
 };
