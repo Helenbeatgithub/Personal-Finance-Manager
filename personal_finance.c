@@ -57,31 +57,144 @@ void addTransactionExpense(struct PersonalFinance *pf, struct Transaction* t) {
     pf->expenseIndex++;
 }
 
-void viewTransactions(const struct PersonalFinance *pf) {
-    printf("Income Transactions:\n");
-    for (int i = 0; i < pf->incomeCount; i++) {
-        printf("Date: %d/%d/%d\n", pf->transaction_Income[i].year, pf->transaction_Income[i].month, pf->transaction_Income[i].day);
-        printf("Type: Income\n");
-        printf("Category: %d\n", pf->transaction_Income[i].category);
-        printf("Description: %s\n", pf->transaction_Income[i].description);
-        printf("Amount: $%.2f\n\n", pf->transaction_Income[i].amount);
-    }
-    printf("Expense Transactions:\n");
-    for (int i = 0; i < pf->expenseCount; i++) {
-        printf("Date: %d/%d/%d\n", pf->transaction_Expense[i].year, pf->transaction_Expense[i].month, pf->transaction_Expense[i].day);
-        printf("Type: Expense\n");
-        printf("Category: %d\n", pf->transaction_Expense[i].category);
-        printf("Description: %s\n", pf->transaction_Expense[i].description);
-        printf("Amount: $%.2f\n\n", pf->transaction_Expense[i].amount);
+//helper method for sorting by date
+int compareDates(struct Transaction* t1, struct Transaction* t2) {
+    if (t1->year != t2->year) {
+        return t1->year - t2->year;
+    } else if (t1->month != t2->month) {
+        return t1->month - t2->month;
+    } else {
+        return t1->day - t2->day;
     }
 }
 
-float viewBalance(const struct PersonalFinance *pf) {
+struct PersonalFinance* sortTransactionsByDate(struct PersonalFinance *pf) {
+    int i, j;
+    int n = pf->incomeIndex;
+    //sort income transactions
+    for (i = 0; i < n - 1; i++) {
+        int min_idx = i;
+        for (j = i + 1; j < n; j++) {
+            if (compareDates(pf->transaction_Income[j], pf->transaction_Income[min_idx]) < 0) {
+                min_idx = j;
+            }
+        }
+        if (min_idx != i) {
+            struct Transaction* temp = pf->transaction_Income[i];
+            pf->transaction_Income[i] = pf->transaction_Income[min_idx];
+            pf->transaction_Income[min_idx] = temp;
+        }
+    }
+    //sort expense transactions
+    n = pf->expenseIndex;
+    for (i = 0; i < n - 1; i++) {
+        int min_idx = i;
+        for (j = i + 1; j < n; j++) {
+            if (compareDates(pf->transaction_Expense[j], pf->transaction_Expense[min_idx]) < 0) {
+                min_idx = j;
+            }
+        }
+        if (min_idx != i) {
+            struct Transaction* temp = pf->transaction_Expense[i];
+            pf->transaction_Expense[i] = pf->transaction_Expense[min_idx];
+            pf->transaction_Expense[min_idx] = temp;
+        }
+    }
+    return pf;
+}
+
+void viewTransactionsByDate(struct PersonalFinance *pf) {
+    //sort by date
+    struct PersonalFinance* pfDate = sortTransactionsByDate(pf);
+    //print income transactions
+    printf("Income Transactions:\n");
+    for (int i = 0; i < pfDate->incomeIndex; i++) {
+        printf("Date: %d/%d/%d\n", pfDate->transaction_Income[i]->year, pfDate->transaction_Income[i]->month, pfDate->transaction_Income[i]->day);
+        printf("Type: Income\n");
+        printf("Category: %s\n", pfDate->transaction_Income[i]->category);
+        printf("Amount: $%.2f\n\n", pfDate->transaction_Income[i]->amount);
+    }
+    //print expense transactions
+    printf("Expense Transactions:\n");
+    for (int i = 0; i < pfDate->expenseIndex; i++) {
+        printf("Date: %d/%d/%d\n", pfDate->transaction_Expense[i]->year, pfDate->transaction_Expense[i]->month, pfDate->transaction_Expense[i]->day);
+        printf("Type: Income\n");
+        printf("Category: %s\n", pfDate->transaction_Expense[i]->category);
+        printf("Amount: $%.2f\n\n", pfDate->transaction_Expense[i]->amount);
+    }
+}
+
+struct PersonalFinance* sortTransactionByAmount(struct PersonalFinance *pf) {
+    int i, j;
+    int n = pf->incomeIndex;
+    //sort income transactions
+    for (i = 0; i < n - 1; i++) {
+        for (j = 0; j < n - i - 1; j++) {
+            if (pf->transaction_Income[j]->amount > pf->transaction_Income[j + 1]->amount) {
+                struct Transaction* temp = pf->transaction_Income[j];
+                pf->transaction_Income[j] = pf->transaction_Income[j + 1];
+                pf->transaction_Income[j + 1] = temp;
+            }
+        }
+    }
+    //sort expense transactions
+    n = pf->expenseIndex;
+    for (i = 0; i < n - 1; i++) {
+        for (j = 0; j < n - i - 1; j++) {
+            if (pf->transaction_Expense[j]->amount > pf->transaction_Expense[j + 1]->amount) {
+                struct Transaction* temp = pf->transaction_Expense[j];
+                pf->transaction_Expense[j] = pf->transaction_Expense[j + 1];
+                pf->transaction_Expense[j + 1] = temp;
+            }
+        }
+    }
+    return pf;
+}
+
+void viewTransactionsAmount(struct PersonalFinance *pf) {
+    //sort by amount
+    struct PersonalFinance* pfAmount = sortTransactionByAmount(pf);
+    printf("Income Transactions:\n");
+    for (int i = 0; i < pfAmount->incomeIndex; i++) {
+        printf("Date: %d/%d/%d\n", pfAmount->transaction_Income[i]->year, pfAmount->transaction_Income[i]->month, pfAmount->transaction_Income[i]->day);
+        printf("Type: Income\n");
+        printf("Category: %d\n", pfAmount->transaction_Income[i]->category);
+        printf("Amount: $%.2f\n\n", pfAmount->transaction_Income[i]->amount);
+    }
+    printf("Expense Transactions:\n");
+    for (int i = 0; i < pfAmount->expenseIndex; i++) {
+        printf("Date: %d/%d/%d\n", pfAmount->transaction_Expense[i]->year, pfAmount->transaction_Expense[i]->month, pfAmount->transaction_Expense[i]->day);
+        printf("Type: Expense\n");
+        printf("Category: %d\n", pfAmount->transaction_Expense[i]->category);
+        printf("Amount: $%.2f\n\n", pfAmount->transaction_Expense[i]->amount);
+    }
+}
+
+void viewTransactionsIncome(struct PersonalFinance *pf) {
+    printf("Income Transactions:\n");
+    for (int i = 0; i < pf->incomeIndex; i++) {
+        printf("Date: %d/%d/%d\n", pf->transaction_Income[i]->year, pf->transaction_Income[i]->month, pf->transaction_Income[i]->day);
+        printf("Type: Income\n");
+        printf("Category: %s\n", pf->transaction_Income[i]->category);
+        printf("Amount: $%.2f\n\n", pf->transaction_Income[i]->amount);
+    }
+}
+
+void viewTransactionsExpense(struct PersonalFinance *pf) {
+    printf("Expense Transactions:\n");
+    for (int i = 0; i < pf->expenseIndex; i++) {
+        printf("Date: %d/%d/%d\n", pf->transaction_Expense[i]->year, pf->transaction_Expense[i]->month, pf->transaction_Expense[i]->day);
+        printf("Type: Income\n");
+        printf("Category: %s\n", pf->transaction_Expense[i]->category);
+        printf("Amount: $%.2f\n\n", pf->transaction_Expense[i]->amount);
+    }
+}
+
+float viewBalance(struct PersonalFinance *pf) {
     return pf->income - pf->expense;
 }
 
 void freeTransaction(struct Transaction* t) {
-    free(t->description);
     free(t);
 }
 
@@ -94,89 +207,6 @@ void freePersonalFinance(struct PersonalFinance* pf) {
     }
     free(pf);
 }
-
-
-void sortTransactionByAmount(struct PersonalFinance *pf) {
-    int i, j;
-    int n = pf->incomeCount;
-
-    // Sort Income Transactions using Bubble Sort
-    for (i = 0; i < n - 1; i++) {
-        for (j = 0; j < n - i - 1; j++) {
-            if (pf->transaction_Income[j].amount > pf->transaction_Income[j + 1].amount) {
-                // Swap the transactions
-                struct Transaction temp = pf->transaction_Income[j];
-                pf->transaction_Income[j] = pf->transaction_Income[j + 1];
-                pf->transaction_Income[j + 1] = temp;
-            }
-        }
-    }
-
-    // Sort Expense Transactions using Bubble Sort
-    n = pf->expenseCount;
-    for (i = 0; i < n - 1; i++) {
-        for (j = 0; j < n - i - 1; j++) {
-            if (pf->transaction_Expense[j].amount > pf->transaction_Expense[j + 1].amount) {
-                // Swap the transactions
-                struct Transaction temp = pf->transaction_Expense[j];
-                pf->transaction_Expense[j] = pf->transaction_Expense[j + 1];
-                pf->transaction_Expense[j + 1] = temp;
-            }
-        }
-    }
-}
-
-
-
-void sortTransactionByDate(struct PersonalFinance *pf) {
-    int i, j;
-    int n = pf->incomeCount;
-
-    // Sort Income Transactions using Selection Sort
-    for (i = 0; i < n - 1; i++) {
-        int min_idx = i;
-        for (j = i + 1; j < n; j++) {
-            if (compareDates(pf->transaction_Income[j], pf->transaction_Income[min_idx]) < 0) {
-                min_idx = j;
-            }
-        }
-        if (min_idx != i) {
-            // Swap the transactions
-            struct Transaction temp = pf->transaction_Income[i];
-            pf->transaction_Income[i] = pf->transaction_Income[min_idx];
-            pf->transaction_Income[min_idx] = temp;
-        }
-    }
-
-    // Sort Expense Transactions using Selection Sort
-    n = pf->expenseCount;
-    for (i = 0; i < n - 1; i++) {
-        int min_idx = i;
-        for (j = i + 1; j < n; j++) {
-            if (compareDates(pf->transaction_Expense[j], pf->transaction_Expense[min_idx]) < 0) {
-                min_idx = j;
-            }
-        }
-        if (min_idx != i) {
-            // Swap the transactions
-            struct Transaction temp = pf->transaction_Expense[i];
-            pf->transaction_Expense[i] = pf->transaction_Expense[min_idx];
-            pf->transaction_Expense[min_idx] = temp;
-        }
-    }
-}
-
-// Helper function to compare two dates (earlier date < later date)
-int compareDates(struct Transaction t1, struct Transaction t2) {
-    if (t1.year != t2.year) {
-        return t1.year - t2.year;
-    } else if (t1.month != t2.month) {
-        return t1.month - t2.month;
-    } else {
-        return t1.day - t2.day;
-    }
-}
-
 
 // Function to save financial data to a file
 void saveData(struct PersonalFinance pf, const char* filename) {
