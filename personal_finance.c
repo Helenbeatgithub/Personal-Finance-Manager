@@ -2,11 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define INCOME_TRANSACTION 100
-#define EXPENSE_TRANSACTION 100
+#define TRANSACTIONS 100
 #define DESC_MAX_LENGTH 50
 
 struct Transaction {
+    int transactionId;
     int year;
     int month;
     int day;
@@ -15,18 +15,34 @@ struct Transaction {
     float amount;
 };
 
-struct Transaction* createTransaction(int year, int month, int day,
-                                      const char type[DESC_MAX_LENGTH], const char category[DESC_MAX_LENGTH], float amount) {
+struct Transaction* createTransaction(int TransactionId, int year, int month, int day,
+                                       char type[DESC_MAX_LENGTH], char category[DESC_MAX_LENGTH], float amount) {
     struct Transaction* newTransaction = (struct Transaction*)malloc(sizeof(struct Transaction));
     newTransaction->year = year;
     newTransaction->month = month;
     newTransaction->day = day;
+    newTransaction->transactionId = TransactionId;
     strcpy(newTransaction->type, type);
     strcpy(newTransaction->category,category);
     newTransaction->amount = amount;
     return newTransaction;
 }
 
+struct PersonalFinance {
+    int personalFinanceId;
+    float income;
+    float expense;
+    struct Transaction* transactions[TRANSACTIONS];
+};
+
+struct PersonalFinance* createPersonalFinance(int personalFinanceId) {
+    struct PersonalFinance* newPersonalFinance = (struct PersonalFinance*)malloc(sizeof(struct PersonalFinance));
+    newPersonalFinance->personalFinanceId;
+    newPersonalFinance->income = 0;
+    newPersonalFinance->expense = 0;
+    return newPersonalFinance;
+}
+/*
 int isValidDate(int year, int month, int day) {
     // Define the number of days in each month
     int daysInMonth[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
@@ -36,7 +52,7 @@ int isValidDate(int year, int month, int day) {
         daysInMonth[2] = 29;
     }
 
-    if (year < 1900 || year > 2023) return 0; 
+    if (year < 1900 || year > 2023) return 0;
     if (month < 1 || month > 12) return 0;
     if (day < 1 || day > daysInMonth[month]) return 0;
 
@@ -64,25 +80,9 @@ struct Transaction* inputTransactionDetails(const char* type) {
 
     return createTransaction(year, month, day, type, category, amount);
 }
+*/
 
 
-struct PersonalFinance {
-    float income;
-    float expense;
-    int incomeIndex;
-    int expenseIndex;
-    struct Transaction* transaction_Expense[EXPENSE_TRANSACTION];
-    struct Transaction* transaction_Income[INCOME_TRANSACTION];
-};
-
-struct PersonalFinance* createPersonalFinance() {
-    struct PersonalFinance* newPersonalFinance = (struct PersonalFinance*)malloc(sizeof(struct PersonalFinance));
-    newPersonalFinance->income = 0;
-    newPersonalFinance->expense = 0;
-    newPersonalFinance->incomeIndex = 0;
-    newPersonalFinance->expenseIndex= 0;
-    return newPersonalFinance;
-}
 
 void addTransactionIncome(struct PersonalFinance *pf, struct Transaction* t) {
     pf->transaction_Income[pf->incomeIndex] = t;
@@ -277,10 +277,10 @@ void deleteIncome(struct PersonalFinance *pf, int index) {
 
 void updateTransaction(struct PersonalFinance *pf, int index, int type, int year, int month, int day, char category[DESC_MAX_LENGTH], float amount) {
     struct Transaction *t; // Defining Local Variables
-                          //t is a pointer to a Transaction structure. 
-                          //It will be used to reference the specific transaction that needs to be updated.
-                          
-                          
+    //t is a pointer to a Transaction structure.
+    //It will be used to reference the specific transaction that needs to be updated.
+
+
     if (type == 1) { // Income type check
         if (index < 0 || index >= pf->incomeIndex) { //This checks if the provided index is valid. If it's out of the boundaries of the existing income transactions
             printf("Error: Invalid Income Index.\n");
@@ -288,7 +288,7 @@ void updateTransaction(struct PersonalFinance *pf, int index, int type, int year
         }
         t = pf->transaction_Income[index]; // t now points to the income transaction to be updated.
         pf->income -= t->amount; // old amount of that transaction is subtracted from the total income to adjust the sum.
-        
+
     } else if (type == 2) { // Expense type check
         if (index < 0 || index >= pf->expenseIndex) {
             printf("Error: Invalid Expense Index.\n");
@@ -296,12 +296,12 @@ void updateTransaction(struct PersonalFinance *pf, int index, int type, int year
         }
         t = pf->transaction_Expense[index];
         pf->expense -= t->amount; // Deduct the old amount
-        
+
     } else {
         printf("Error: Invalid type specified.\n"); // Handling Invalid Transaction Types:
         return;
     }
-    
+
     //Updating the Transaction Details:
     t->year = year;
     t->month = month;
@@ -320,145 +320,145 @@ void updateTransaction(struct PersonalFinance *pf, int index, int type, int year
 
 int main() {
 
-        
-        struct PersonalFinance *pf = createPersonalFinance();
 
-        int choice;
-        while (1) {
-            printf("\nPersonal Finance Management System\n");
-            printf("1. Add Income Transaction\n");
-            printf("2. Add Expense Transaction\n");
-            printf("3. View Transactions by Date\n");
-            printf("4. View Transactions by Amount\n");
-            printf("5. View All Income Transactions\n");
-            printf("6. View All Expense Transactions\n");
-            printf("7. View Balance\n");
-            printf("8. Update Transaction\n");
-            printf("9. Delete Income\n");
-            printf("10. Delete Expense\n");
-            printf("11. Exit\n");
-            printf("Enter your choice: \n");
-            scanf("%d", &choice);
+    struct PersonalFinance *pf = createPersonalFinance();
 
-            switch (choice) {
-                case 1: {
-                    struct Transaction* t = inputTransactionDetails("Income");
-                    addTransactionIncome(pf, t);
-                    break;
-                }
-                case 2: {
-                    struct Transaction* t = inputTransactionDetails("Expense");
-                    addTransactionExpense(pf, t);
-                    break;
-                }
+    int choice;
+    while (1) {
+        printf("\nPersonal Finance Management System\n");
+        printf("1. Add Income Transaction\n");
+        printf("2. Add Expense Transaction\n");
+        printf("3. View Transactions by Date\n");
+        printf("4. View Transactions by Amount\n");
+        printf("5. View All Income Transactions\n");
+        printf("6. View All Expense Transactions\n");
+        printf("7. View Balance\n");
+        printf("8. Update Transaction\n");
+        printf("9. Delete Income\n");
+        printf("10. Delete Expense\n");
+        printf("11. Exit\n");
+        printf("Enter your choice: \n");
+        scanf("%d", &choice);
 
-                case 3: {
-                    viewTransactionsByDate(pf);
+        switch (choice) {
+            case 1: {
+                struct Transaction* t = inputTransactionDetails("Income");
+                addTransactionIncome(pf, t);
+                break;
+            }
+            case 2: {
+                struct Transaction* t = inputTransactionDetails("Expense");
+                addTransactionExpense(pf, t);
+                break;
+            }
+
+            case 3: {
+                viewTransactionsByDate(pf);
+                break;
+            }
+            case 4: {
+                viewTransactionsAmount(pf);
+                break;
+            }
+            case 5: {
+                viewTransactionsIncome(pf);
+                break;
+            }
+            case 6: {
+                viewTransactionsExpense(pf);
+                break;
+            }
+            case 7: {
+                float balance = viewBalance(pf);
+                printf("Balance: $%.2f\n", balance);
+                break;
+            }
+            case 8: {
+                //Variable Declaration:
+                int type, index,//index will hold the ID or position of the transaction that needs to be updated.
+                year, month, day;
+                char category[DESC_MAX_LENGTH];
+                float amount;
+
+                //Get Transaction Type:
+                printf("Update Transaction\n");
+                printf("------------------------------\n");
+                printf("Enter the type of transaction:\n");
+                printf("1. Income\n");
+                printf("2. Expense\n");
+                scanf("%d", &type);
+
+                //Get Transaction ID:
+                if (type == 1) {
+                    printf("Enter the ID of the income transaction to update: ");
+                } else if (type == 2) {
+                    printf("Enter the ID of the expense transaction to update: ");
+                } else {
+                    printf("Error: Invalid type entered.\n");
                     break;
                 }
-                case 4: {
-                    viewTransactionsAmount(pf);
-                    break;
-                }
-                case 5: {
-                    viewTransactionsIncome(pf);
-                    break;
-                }
-                case 6: {
-                    viewTransactionsExpense(pf);
-                    break;
-                }
-                case 7: {
-                    float balance = viewBalance(pf);
-                    printf("Balance: $%.2f\n", balance);
-                    break;
-                }
-                case 8: {
-                    //Variable Declaration:
-                    int type, index,//index will hold the ID or position of the transaction that needs to be updated.
-                    year, month, day;
-                    char category[DESC_MAX_LENGTH];
-                    float amount;
-                    
-                    //Get Transaction Type:
-                    printf("Update Transaction\n");
-                    printf("------------------------------\n");
-                    printf("Enter the type of transaction:\n");
-                    printf("1. Income\n");
-                    printf("2. Expense\n");
-                    scanf("%d", &type);
-                    
-                    //Get Transaction ID:
-                    if (type == 1) {
-                        printf("Enter the ID of the income transaction to update: ");
-                    } else if (type == 2) {
-                        printf("Enter the ID of the expense transaction to update: ");
-                    } else {
-                        printf("Error: Invalid type entered.\n");
-                        break;
+                scanf("%d", &index);
+
+                //Get Updated Date:
+                do {
+                    printf("Enter the updated year of the transaction (e.g., 2023):\n");
+                    scanf("%d", &year);
+                    printf("Enter the updated month of the transaction (1-12):\n");
+                    scanf("%d", &month);
+                    printf("Enter the updated day of the transaction (1-31):\n");
+                    scanf("%d", &day);
+
+                    if(!isValidDate(year, month, day)) {
+                        printf("Error: Invalid date entered. Please try again.\n");
                     }
-                    scanf("%d", &index);
-                    
-                    //Get Updated Date:
-                    do {
-                        printf("Enter the updated year of the transaction (e.g., 2023):\n");
-                        scanf("%d", &year);
-                        printf("Enter the updated month of the transaction (1-12):\n");
-                        scanf("%d", &month);
-                        printf("Enter the updated day of the transaction (1-31):\n");
-                        scanf("%d", &day);
-                
-                        if(!isValidDate(year, month, day)) {
-                            printf("Error: Invalid date entered. Please try again.\n");
-                        }
-                    } while(!isValidDate(year, month, day));
-                    
-                    //Get Updated Category:
-                    printf("Enter the updated category of the transaction (e.g., Groceries, Rent):\n");
-                    scanf("%s", category); // category is already an address, no need for &
-                    
-                    printf("Enter the updated amount of the transaction (e.g., 150.50):\n");
-                    scanf("%f", &amount);
-                    
-                    //The updateTransaction function is called with the provided details to perform the actual update.
-                    //The index - 1 is used because arrays in C start at 0, 
-                    //so if a user provides an ID of 1, the actual index in the array would be 0.
-                    updateTransaction(pf, index - 1, type, year, month, day, category, amount);
-                    
-                    //printf("Transaction updated successfully.\n");
-                    printf("Transaction updated successfully.\n");
-                    break;
-                }
+                } while(!isValidDate(year, month, day));
+
+                //Get Updated Category:
+                printf("Enter the updated category of the transaction (e.g., Groceries, Rent):\n");
+                scanf("%s", category); // category is already an address, no need for &
+
+                printf("Enter the updated amount of the transaction (e.g., 150.50):\n");
+                scanf("%f", &amount);
+
+                //The updateTransaction function is called with the provided details to perform the actual update.
+                //The index - 1 is used because arrays in C start at 0,
+                //so if a user provides an ID of 1, the actual index in the array would be 0.
+                updateTransaction(pf, index - 1, type, year, month, day, category, amount);
+
+                //printf("Transaction updated successfully.\n");
+                printf("Transaction updated successfully.\n");
+                break;
+            }
 
 
-                
-                case 9: {
-                    int incomeIndex;
-                    printf("Enter the ID of the income to delete: ");
-                    scanf("%d", &incomeIndex);
-                    deleteIncome(pf, incomeIndex - 1);
-                    break;
-                }
-                
-                case 10: {
-                    int expenseIndex;
-                    printf("Enter the ID of the expense to delete: ");
-                    scanf("%d", &expenseIndex);
-                    deleteExpense(pf, expenseIndex - 1);
-                    break;
-                }
-                
-                case 11: {
-                    freePersonalFinance(pf);
-                    printf("Exiting the program.\n");
-                    return 0;
-                }
-                
-                default: {
-                    printf("Invalid choice. Please select a valid option.\n");
-                }
+
+            case 9: {
+                int incomeIndex;
+                printf("Enter the ID of the income to delete: ");
+                scanf("%d", &incomeIndex);
+                deleteIncome(pf, incomeIndex - 1);
+                break;
+            }
+
+            case 10: {
+                int expenseIndex;
+                printf("Enter the ID of the expense to delete: ");
+                scanf("%d", &expenseIndex);
+                deleteExpense(pf, expenseIndex - 1);
+                break;
+            }
+
+            case 11: {
+                freePersonalFinance(pf);
+                printf("Exiting the program.\n");
+                return 0;
+            }
+
+            default: {
+                printf("Invalid choice. Please select a valid option.\n");
             }
         }
-        
-        return 0;
+    }
+
+    return 0;
 }
