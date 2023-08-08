@@ -191,7 +191,9 @@ void viewTransactionsExpense(struct PersonalFinance *pf) {
 }
 
 float viewBalance(struct PersonalFinance *pf) {
-    return pf->income - pf->expense;
+    float balance = viewBalance(pf);
+    printf("Balance: $%.2f\n", balance);
+    break;
 }
 
 void freePersonalFinance(struct PersonalFinance* pf) {
@@ -203,7 +205,35 @@ void freePersonalFinance(struct PersonalFinance* pf) {
     }
     free(pf);
 }
+void deleteExpense(struct PersonalFinance *pf, int index) {
+    if (index >= 0 && index < pf->expenseIndex) {
+        pf->expense -= pf->transaction_Expense[index]->amount;
 
+        // Shift the remaining transactions to fill the gap
+        for (int i = index; i < pf->expenseIndex - 1; i++) {
+            pf->transaction_Expense[i] = pf->transaction_Expense[i + 1];
+        }
+
+        pf->expenseIndex--;
+    } else {
+        printf("Error: Expense ID %d not found.\n", index);
+    }
+}
+
+void deleteIncome(struct PersonalFinance *pf, int index) {
+    if (index >= 0 && index < pf->incomeIndex) {
+        pf->income -= pf->transaction_Income[index]->amount;
+
+        // Shift the remaining transactions to fill the gap
+        for (int i = index; i < pf->incomeIndex - 1; i++) {
+            pf->transaction_Income[i] = pf->transaction_Income[i + 1];
+        }
+
+        pf->incomeIndex--;
+    } else {
+        printf("Error: Income ID %d not found.\n", index);
+    }
+}
 /*
 void saveData(struct PersonalFinance pf, const char* filename) {
     FILE *file = fopen(filename, "w");
@@ -269,6 +299,86 @@ void loadData(struct PersonalFinance *pf, const char* filename) {
 
 
 int main() {
-    struct PersonalFinance* pf = createPersonalFinance();
+    int main() {
+    struct PersonalFinance *pf = createPersonalFinance();
+    
+    int choice;
+    while (1) {
+        printf("\nPersonal Finance Management System\n");
+        printf("1. Add Income\n");
+        printf("2. Add Expense\n");
+        printf("3. View Transactions by Date\n");
+        printf("4. View Transactions by Amount\n");
+        printf("5. View All Income\n");
+        printf("6. View All Expenses\n");
+        printf("7. View Balance\n");
+        printf("8. Update Transaction\n");
+        printf("9. Delete Income\n");
+        printf("10. Delete Expense\n");
+        printf("11. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+        
+        switch (choice) {
+            case 1: {
+                
+                break;
+            }
+            case 2: {
+                
+                break;
+            }
+            case 3: {
+                
+                break;
+            }
+            case 4: {
+                
+                break;
+            }
+            case 5: {
+                
+                break;
+            }
+            case 6: {
+                
+                break;
+            }
+            case 7: {
+                float balance = viewBalance(pf);
+                printf("Balance: $%.2f\n", balance);
+                break;
+            }
+            case 8: {
+                
+                break;
+            }
+            case 9: {
+                int incomeIndex;
+                printf("Enter the ID of the income to delete: ");
+                scanf("%d", &incomeIndex);
+                deleteIncome(pf, incomeIndex - 1);
+                break;
+            }
+            case 10: {
+                int expenseIndex;
+                printf("Enter the ID of the expense to delete: ");
+                scanf("%d", &expenseIndex);
+                deleteExpense(pf, expenseIndex - 1);
+                break;
+            }
+            case 11: {
+                freePersonalFinance(pf);
+                printf("Exiting the program.\n");
+                return 0;
+            }
+            default: {
+                printf("Invalid choice. Please select a valid option.\n");
+            }
+        }
+    }
+    
     return 0;
+}
+
 }
