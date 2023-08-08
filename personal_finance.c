@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define INCOME_TRANSACTION 100
 #define EXPENSE_TRANSACTION 100
@@ -8,19 +9,19 @@ struct Transaction {
     int year;
     int month;
     int day;
-    const char* type;
+    char* type;
     char* category;
     float amount;
 };
 
 struct Transaction* createTransaction(int year, int month, int day,
-                                    const char* type, char* category, float amount) {
+                                    const char* type, const char* category, float amount) {
     struct Transaction* newTransaction = (struct Transaction*)malloc(sizeof(struct Transaction));
     newTransaction->year = year;
     newTransaction->month = month;
     newTransaction->day = day;
     newTransaction->type = &type;
-    newTransaction->category = &category;
+    newTransaction->category = strdup(&category);
     newTransaction->amount = amount;
     return newTransaction;
 }
@@ -156,14 +157,14 @@ void viewTransactionsAmount(struct PersonalFinance *pf) {
     for (int i = 0; i < pfAmount->incomeIndex; i++) {
         printf("Date: %d/%d/%d\n", pfAmount->transaction_Income[i]->year, pfAmount->transaction_Income[i]->month, pfAmount->transaction_Income[i]->day);
         printf("Type: Income\n");
-        printf("Category: %d\n", pfAmount->transaction_Income[i]->category);
+        printf("Category: %s\n", pfAmount->transaction_Income[i]->category);
         printf("Amount: $%.2f\n\n", pfAmount->transaction_Income[i]->amount);
     }
     printf("Expense Transactions:\n");
     for (int i = 0; i < pfAmount->expenseIndex; i++) {
         printf("Date: %d/%d/%d\n", pfAmount->transaction_Expense[i]->year, pfAmount->transaction_Expense[i]->month, pfAmount->transaction_Expense[i]->day);
         printf("Type: Expense\n");
-        printf("Category: %d\n", pfAmount->transaction_Expense[i]->category);
+        printf("Category: %s\n", pfAmount->transaction_Expense[i]->category);
         printf("Amount: $%.2f\n\n", pfAmount->transaction_Expense[i]->amount);
     }
 }
@@ -182,7 +183,7 @@ void viewTransactionsExpense(struct PersonalFinance *pf) {
     printf("Expense Transactions:\n");
     for (int i = 0; i < pf->expenseIndex; i++) {
         printf("Date: %d/%d/%d\n", pf->transaction_Expense[i]->year, pf->transaction_Expense[i]->month, pf->transaction_Expense[i]->day);
-        printf("Type: Expense\n");
+        printf("Type: Income\n");
         printf("Category: %s\n", pf->transaction_Expense[i]->category);
         printf("Amount: $%.2f\n\n", pf->transaction_Expense[i]->amount);
     }
@@ -328,7 +329,7 @@ int main() {
                 printf("Enter the day of the transaction:\n");
                 scanf("%d", &day);
                 printf("Enter the transaction category:\n");
-                scanf("%ls", &category);
+                scanf("%s", &category);
                 printf("Enter the amount of the transaction:\n");
                 scanf("%f", &amount);
                 t = createTransaction(year, month, day, type, category, amount);
@@ -338,7 +339,7 @@ int main() {
             case 2: {
                 int year, month, day;
                 char* category;
-                const char* type = "Expense";
+                char* type = "Expense";
                 float amount;
                 struct Transaction* t;
                 printf("Enter the year of the transaction:\n");
@@ -347,6 +348,7 @@ int main() {
                 scanf("%d", &month);
                 printf("Enter the day of the transaction:\n");
                 scanf("%d", &day);
+                category = (char *)malloc(100 * sizeof(char));
                 printf("Enter the transaction category:\n");
                 scanf("%s", &category);
                 printf("Enter the amount of the transaction:\n");
