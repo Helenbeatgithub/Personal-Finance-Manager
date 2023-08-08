@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 #define INCOME_TRANSACTION 100
 #define EXPENSE_TRANSACTION 100
@@ -9,7 +8,7 @@ struct Transaction {
     int year;
     int month;
     int day;
-    char* type;
+    const char* type;
     char* category;
     float amount;
 };
@@ -183,7 +182,7 @@ void viewTransactionsExpense(struct PersonalFinance *pf) {
     printf("Expense Transactions:\n");
     for (int i = 0; i < pf->expenseIndex; i++) {
         printf("Date: %d/%d/%d\n", pf->transaction_Expense[i]->year, pf->transaction_Expense[i]->month, pf->transaction_Expense[i]->day);
-        printf("Type: Income\n");
+        printf("Type: Expense\n");
         printf("Category: %s\n", pf->transaction_Expense[i]->category);
         printf("Amount: $%.2f\n\n", pf->transaction_Expense[i]->amount);
     }
@@ -339,7 +338,7 @@ int main() {
             case 2: {
                 int year, month, day;
                 char* category;
-                char* type = "Expense";
+                const char* type = "Expense";
                 float amount;
                 struct Transaction* t;
                 printf("Enter the year of the transaction:\n");
