@@ -374,10 +374,13 @@ int main() {
                     break;
                 }
                 case 8: {
-                    int type, index, year, month, day;
+                    //Variable Declaration:
+                    int type, index,//index will hold the ID or position of the transaction that needs to be updated.
+                    year, month, day;
                     char category[DESC_MAX_LENGTH];
                     float amount;
                     
+                    //Get Transaction Type:
                     printf("Update Transaction\n");
                     printf("------------------------------\n");
                     printf("Enter the type of transaction:\n");
@@ -385,6 +388,7 @@ int main() {
                     printf("2. Expense\n");
                     scanf("%d", &type);
                     
+                    //Get Transaction ID:
                     if (type == 1) {
                         printf("Enter the ID of the income transaction to update: ");
                     } else if (type == 2) {
@@ -395,6 +399,7 @@ int main() {
                     }
                     scanf("%d", &index);
                     
+                    //Get Updated Date:
                     do {
                         printf("Enter the updated year of the transaction (e.g., 2023):\n");
                         scanf("%d", &year);
@@ -408,14 +413,19 @@ int main() {
                         }
                     } while(!isValidDate(year, month, day));
                     
+                    //Get Updated Category:
                     printf("Enter the updated category of the transaction (e.g., Groceries, Rent):\n");
                     scanf("%s", category); // category is already an address, no need for &
                     
                     printf("Enter the updated amount of the transaction (e.g., 150.50):\n");
                     scanf("%f", &amount);
                     
+                    //The updateTransaction function is called with the provided details to perform the actual update.
+                    //The index - 1 is used because arrays in C start at 0, 
+                    //so if a user provides an ID of 1, the actual index in the array would be 0.
                     updateTransaction(pf, index - 1, type, year, month, day, category, amount);
                     
+                    //printf("Transaction updated successfully.\n");
                     printf("Transaction updated successfully.\n");
                     break;
                 }
