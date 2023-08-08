@@ -232,68 +232,39 @@ void deleteIncome(struct PersonalFinance *pf, int index) {
         printf("Error: Income ID %d not found.\n", index);
     }
 }
-/*
-void saveData(struct PersonalFinance pf, const char* filename) {
-    FILE *file = fopen(filename, "w");
-    if (file == NULL) {
-        printf("Error opening the file for writing\n");
+void updateTransaction(struct PersonalFinance *pf, int index, int type, int year, int month, int day, char category[DESC_MAX_LENGTH], float amount) {
+    struct Transaction *t;
+    if (type == 1) { // Income
+        if (index < 0 || index >= pf->incomeIndex) {
+            printf("Error: Invalid Income Index.\n");
+            return;
+        }
+        t = pf->transaction_Income[index];
+        pf->income -= t->amount; // Deduct the old amount
+    } else if (type == 2) { // Expense
+        if (index < 0 || index >= pf->expenseIndex) {
+            printf("Error: Invalid Expense Index.\n");
+            return;
+        }
+        t = pf->transaction_Expense[index];
+        pf->expense -= t->amount; // Deduct the old amount
+    } else {
+        printf("Error: Invalid type specified.\n");
         return;
     }
 
-    // Save income and expense data
-    fprintf(file, "%f %f\n", pf.income, pf.expense);
+    t->year = year;
+    t->month = month;
+    t->day = day;
+    strcpy(t->category, category);
+    t->amount = amount;
 
-    // Save income transactions
-    fprintf(file, "%d\n", pf.incomeCount);
-    for (int i = 0; i < pf.incomeCount; i++) {
-        struct Transaction t = pf.transaction_Income[i];
-        fprintf(file, "%d %d %d %d %d %s %f\n", t.year, t.month, t.day, t.type, t.category, t.description, t.amount);
+    if (type == 1) {
+        pf->income += amount; // Add the updated amount
+    } else {
+        pf->expense += amount; // Add the updated amount
     }
-
-    // Save expense transactions
-    fprintf(file, "%d\n", pf.expenseCount);
-    for (int i = 0; i < pf.expenseCount; i++) {
-        struct Transaction t = pf.transaction_Expense[i];
-        fprintf(file, "%d %d %d %d %d %s %f\n", t.year, t.month, t.day, t.type, t.category, t.description, t.amount);
-    }
-
-    fclose(file);
 }
-
-
-// Function to load financial data from a file
-void loadData(struct PersonalFinance *pf, const char* filename) {
-    FILE *file = fopen(filename, "r");
-    if (file == NULL) {
-        printf("Error opening the file for reading\n");
-        return;
-    }
-
-
-    // Load income and expense data
-    fscanf(file, "%f %f\n", &pf->income, &pf->expense);
-
-    // Load income transactions
-    fscanf(file, "%d\n", &pf->incomeCount);
-    for (int i = 0; i < pf->incomeCount; i++) {
-        struct Transaction t;
-        fscanf(file, "%d %d %d %d %d %253s %f\n",
-               &t.year, &t.month, &t.day, (int*)&t.type, (int*)&t.category, t.description, &t.amount);
-        pf->transaction_Income[i] = t;
-    }
-
-    // Load expense transactions
-    fscanf(file, "%d\n", &pf->expenseCount);
-    for (int i = 0; i < pf->expenseCount; i++) {
-        struct Transaction t;
-        fscanf(file, "%d %d %d %d %d %253s %f\n",
-               &t.year, &t.month, &t.day, (int*)&t.type, (int*)&t.category, t.description, &t.amount);
-        pf->transaction_Expense[i] = t;
-    }
-
-    fclose(file);
-}
-*/
 
 
 int main() {
@@ -378,10 +349,36 @@ int main() {
                     printf("Balance: $%.2f\n", balance);
                     break;
                 }
+                
                 case 8: {
-
+                int type, index, year, month, day;
+                char category[DESC_MAX_LENGTH];
+                float amount;
+                printf("Enter the type of transaction (1 for Income, 2 for Expense): \n");
+                scanf("%d", &type);
+                if (type == 1) {
+                    printf("Enter the ID of the income to update: ");
+                } else if (type == 2) {
+                    printf("Enter the ID of the expense to update: ");
+                } else {
+                    printf("Error: Invalid type entered.\n");
                     break;
                 }
+                scanf("%d", &index);
+                printf("Enter the updated year of the transaction:\n");
+                scanf("%d", &year);
+                printf("Enter the updated month of the transaction:\n");
+                scanf("%d", &month);
+                printf("Enter the updated day of the transaction:\n");
+                scanf("%d", &day);
+                printf("Enter the updated transaction category:\n");
+                scanf("%s", category); // Remove & here since category is already an address
+                printf("Enter the updated amount of the transaction:\n");
+                scanf("%f", &amount);
+                updateTransaction(pf, index - 1, type, year, month, day, category, amount);
+                break;
+                }
+                
                 case 9: {
                     int incomeIndex;
                     printf("Enter the ID of the income to delete: ");
