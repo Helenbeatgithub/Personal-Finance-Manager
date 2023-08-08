@@ -16,7 +16,7 @@ struct Transaction {
 };
 
 struct Transaction* createTransaction(int year, int month, int day,
-                                     char type[DESC_MAX_LENGTH], char category[DESC_MAX_LENGTH], float amount) {
+                                      char type[DESC_MAX_LENGTH], char category[DESC_MAX_LENGTH], float amount) {
     struct Transaction* newTransaction = (struct Transaction*)malloc(sizeof(struct Transaction));
     newTransaction->year = year;
     newTransaction->month = month;
@@ -193,7 +193,7 @@ void viewTransactionsExpense(struct PersonalFinance *pf) {
 float viewBalance(struct PersonalFinance *pf) {
     float balance = viewBalance(pf);
     printf("Balance: $%.2f\n", balance);
-    break;
+    return balance;
 }
 
 void freePersonalFinance(struct PersonalFinance* pf) {
@@ -299,86 +299,114 @@ void loadData(struct PersonalFinance *pf, const char* filename) {
 
 
 int main() {
-    int main() {
-    struct PersonalFinance *pf = createPersonalFinance();
-    
-    int choice;
-    while (1) {
-        printf("\nPersonal Finance Management System\n");
-        printf("1. Add Income\n");
-        printf("2. Add Expense\n");
-        printf("3. View Transactions by Date\n");
-        printf("4. View Transactions by Amount\n");
-        printf("5. View All Income\n");
-        printf("6. View All Expenses\n");
-        printf("7. View Balance\n");
-        printf("8. Update Transaction\n");
-        printf("9. Delete Income\n");
-        printf("10. Delete Expense\n");
-        printf("11. Exit\n");
-        printf("Enter your choice: ");
-        scanf("%d", &choice);
-        
-        switch (choice) {
-            case 1: {
-                
-                break;
-            }
-            case 2: {
-                
-                break;
-            }
-            case 3: {
-                
-                break;
-            }
-            case 4: {
-                
-                break;
-            }
-            case 5: {
-                
-                break;
-            }
-            case 6: {
-                
-                break;
-            }
-            case 7: {
-                float balance = viewBalance(pf);
-                printf("Balance: $%.2f\n", balance);
-                break;
-            }
-            case 8: {
-                
-                break;
-            }
-            case 9: {
-                int incomeIndex;
-                printf("Enter the ID of the income to delete: ");
-                scanf("%d", &incomeIndex);
-                deleteIncome(pf, incomeIndex - 1);
-                break;
-            }
-            case 10: {
-                int expenseIndex;
-                printf("Enter the ID of the expense to delete: ");
-                scanf("%d", &expenseIndex);
-                deleteExpense(pf, expenseIndex - 1);
-                break;
-            }
-            case 11: {
-                freePersonalFinance(pf);
-                printf("Exiting the program.\n");
-                return 0;
-            }
-            default: {
-                printf("Invalid choice. Please select a valid option.\n");
+        struct PersonalFinance *pf = createPersonalFinance();
+
+        int choice;
+        while (1) {
+            printf("\nPersonal Finance Management System\n");
+            printf("1. Add Income Transaction\n");
+            printf("2. Add Expense Transaction\n");
+            printf("3. View Transactions by Date\n");
+            printf("4. View Transactions by Amount\n");
+            printf("5. View All Income Transactions\n");
+            printf("6. View All Expense Transactions\n");
+            printf("7. View Balance\n");
+            printf("8. Update Transaction\n");
+            printf("9. Delete Income\n");
+            printf("10. Delete Expense\n");
+            printf("11. Exit\n");
+            printf("Enter your choice: \n");
+            scanf("%d", &choice);
+
+            switch (choice) {
+                case 1: {
+                    int year, month, day;
+                    char* category;
+                    char* type = "Income";
+                    float amount;
+                    struct Transaction* t;
+                    printf("Enter the year of the transaction:\n");
+                    scanf("%d", &year);
+                    printf("Enter the month of the transaction:\n");
+                    scanf("%d", &month);
+                    printf("Enter the day of the transaction:\n");
+                    scanf("%d", &day);
+                    printf("Enter the transaction category:\n");
+                    scanf("%s", &category);
+                    printf("Enter the amount of the transaction:\n");
+                    scanf("%f", &amount);
+                    t = createTransaction(year, month, day, type, category, amount);
+                    addTransactionIncome(pf, t);
+                    break;
+                }
+                case 2: {
+                    int year, month, day;
+                    char* category;
+                    char* type = "Expense";
+                    float amount;
+                    struct Transaction* t;
+                    printf("Enter the year of the transaction:\n");
+                    scanf("%d", &year);
+                    printf("Enter the month of the transaction:\n");
+                    scanf("%d", &month);
+                    printf("Enter the day of the transaction:\n");
+                    scanf("%d", &day);
+                    printf("Enter the transaction category:\n");
+                    scanf("%s", &category);
+                    printf("Enter the amount of the transaction:\n");
+                    scanf("%f", &amount);
+                    t = createTransaction(year, month, day, type, category, amount);
+                    addTransactionExpense(pf, t);
+                    break;
+                }
+                case 3: {
+                    viewTransactionsByDate(pf);
+                    break;
+                }
+                case 4: {
+                    viewTransactionsAmount(pf);
+                    break;
+                }
+                case 5: {
+                    viewTransactionsIncome(pf);
+                    break;
+                }
+                case 6: {
+                    viewTransactionsExpense(pf);
+                    break;
+                }
+                case 7: {
+                    float balance = viewBalance(pf);
+                    printf("Balance: $%.2f\n", balance);
+                    break;
+                }
+                case 8: {
+
+                    break;
+                }
+                case 9: {
+                    int incomeIndex;
+                    printf("Enter the ID of the income to delete: ");
+                    scanf("%d", &incomeIndex);
+                    deleteIncome(pf, incomeIndex - 1);
+                    break;
+                }
+                case 10: {
+                    int expenseIndex;
+                    printf("Enter the ID of the expense to delete: ");
+                    scanf("%d", &expenseIndex);
+                    deleteExpense(pf, expenseIndex - 1);
+                    break;
+                }
+                case 11: {
+                    freePersonalFinance(pf);
+                    printf("Exiting the program.\n");
+                    return 0;
+                }
+                default: {
+                    printf("Invalid choice. Please select a valid option.\n");
+                }
             }
         }
-    }
-    
-    return 0;
-}
-
+        return 0;
 }
