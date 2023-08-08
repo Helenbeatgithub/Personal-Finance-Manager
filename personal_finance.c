@@ -16,7 +16,7 @@ struct Transaction {
 };
 
 struct Transaction* createTransaction(int year, int month, int day,
-                                     char type[DESC_MAX_LENGTH], char* category, float amount) {
+                                     char type[DESC_MAX_LENGTH], char category[DESC_MAX_LENGTH], float amount) {
     struct Transaction* newTransaction = (struct Transaction*)malloc(sizeof(struct Transaction));
     newTransaction->year = year;
     newTransaction->month = month;
@@ -194,21 +194,17 @@ float viewBalance(struct PersonalFinance *pf) {
     return pf->income - pf->expense;
 }
 
-void freeTransaction(struct Transaction* t) {
-    free(t);
-}
-
 void freePersonalFinance(struct PersonalFinance* pf) {
-    for (int i = 0; i < pf->incomeCount; i++) {
-        free(pf->transaction_Income[i].description);
+    for (int i = 0; i < pf->incomeIndex; i++) {
+        free(pf->transaction_Income[i]);
     }
-    for (int i = 0; i < pf->expenseCount; i++) {
-        free(pf->transaction_Expense[i].description);
+    for (int i = 0; i < pf->expenseIndex; i++) {
+        free(pf->transaction_Expense[i]);
     }
     free(pf);
 }
 
-// Function to save financial data to a file
+/*
 void saveData(struct PersonalFinance pf, const char* filename) {
     FILE *file = fopen(filename, "w");
     if (file == NULL) {
@@ -269,28 +265,10 @@ void loadData(struct PersonalFinance *pf, const char* filename) {
 
     fclose(file);
 }
-
+*/
 
 
 int main() {
-    struct PersonalFinance pf = createPersonalFinance();
-
-    // Use &pf to pass a pointer to the struct where required
-    viewTransactions(&pf);
-    saveData(&pf, "finance_data.txt");
-
-    // Directly modify the struct for resetting counts
-    pf.incomeCount = 0;
-    pf.expenseCount = 0;
-
-    loadData(&pf, "finance_data.txt");
-    viewTransactions(&pf);
-
-    float balance = viewBalance(&pf);
-    printf("Current Balance: $%.2f\n", balance);
-
-    // The freePersonalFinance function was not provided in the initial code, and may not be needed if dynamic allocation isn't being used. Remove the call or provide the function definition.
-    // freePersonalFinance(&pf);
-
+    struct PersonalFinance* pf = createPersonalFinance();
     return 0;
 }
