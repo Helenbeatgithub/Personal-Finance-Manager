@@ -348,7 +348,6 @@ int main() {
                 scanf("%d", &month);
                 printf("Enter the day of the transaction:\n");
                 scanf("%d", &day);
-                category = (char *)malloc(100 * sizeof(char));
                 printf("Enter the transaction category:\n");
                 scanf("%s", &category);
                 printf("Enter the amount of the transaction:\n");
