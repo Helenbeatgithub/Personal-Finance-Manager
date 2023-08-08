@@ -191,9 +191,7 @@ void viewTransactionsExpense(struct PersonalFinance *pf) {
 }
 
 float viewBalance(struct PersonalFinance *pf) {
-    float balance = viewBalance(pf);
-    printf("Balance: $%.2f\n", balance);
-    return balance;
+    return pf->income - pf->expense;
 }
 
 void freePersonalFinance(struct PersonalFinance* pf) {
