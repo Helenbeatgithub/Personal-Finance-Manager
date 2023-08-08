@@ -15,50 +15,46 @@ struct Transaction {
     float amount;
 };
 
-struct Transaction createTransaction(int year, int month, int day,
-        enum Type type, enum Category category, const char* description, float amount) {
-    struct Transaction newTransaction;
-    newTransaction.year = year;
-    newTransaction.month = month;
-    newTransaction.day = day;
-    newTransaction.type = type;
-    newTransaction.category = category;
-    strncpy(newTransaction.description, description, DESC_MAX_LENGTH - 1);
-    newTransaction.description[DESC_MAX_LENGTH - 1] = '\0';  // Ensure null-terminated
-    newTransaction.amount = amount;
+struct Transaction* createTransaction(int year, int month, int day,
+                                     char type[DESC_MAX_LENGTH], char* category, float amount) {
+    struct Transaction* newTransaction = (struct Transaction*)malloc(sizeof(struct Transaction));
+    newTransaction->year = year;
+    newTransaction->month = month;
+    newTransaction->day = day;
+    strcpy(newTransaction->type, type);
+    strcpy(newTransaction->category,category);
+    newTransaction->amount = amount;
     return newTransaction;
 }
 
 struct PersonalFinance {
     float income;
     float expense;
-    int incomeCount;
-    int expenseCount;
     int incomeIndex;
     int expenseIndex;
-    struct Transaction transaction_Expense[EXPENSE_TRANSACTION];
-    struct Transaction transaction_Income[INCOME_TRANSACTION];
+    struct Transaction* transaction_Expense[EXPENSE_TRANSACTION];
+    struct Transaction* transaction_Income[INCOME_TRANSACTION];
 };
 
-struct PersonalFinance createPersonalFinance() {
-    struct PersonalFinance newPersonalFinance;
-    newPersonalFinance.income = 0;
-    newPersonalFinance.expense = 0;
-    newPersonalFinance.incomeCount = 0;
-    newPersonalFinance.expenseCount= 0;
+struct PersonalFinance* createPersonalFinance() {
+    struct PersonalFinance* newPersonalFinance = (struct PersonalFinance*)malloc(sizeof(struct PersonalFinance));
+    newPersonalFinance->income = 0;
+    newPersonalFinance->expense = 0;
+    newPersonalFinance->incomeIndex = 0;
+    newPersonalFinance->expenseIndex= 0;
     return newPersonalFinance;
 }
 
-void addTransaction(struct PersonalFinance *pf, struct Transaction t) {
-    if (t.type == Income) {
-        pf->transaction_Income[pf->incomeCount] = t;
-        pf->income += t.amount;
-        pf->incomeCount++;
-    } else {
-        pf->transaction_Expense[pf->expenseCount] = t;
-        pf->expense += t.amount;
-        pf->expenseCount++;
-    }
+void addTransactionIncome(struct PersonalFinance *pf, struct Transaction* t) {
+    pf->transaction_Income[pf->incomeIndex] = t;
+    pf->income += t->amount;
+    pf->incomeIndex++;
+}
+
+void addTransactionExpense(struct PersonalFinance *pf, struct Transaction* t) {
+    pf->transaction_Expense[pf->expenseIndex] = t;
+    pf->expense += t->amount;
+    pf->expenseIndex++;
 }
 
 void viewTransactions(const struct PersonalFinance *pf) {
@@ -103,7 +99,7 @@ void freePersonalFinance(struct PersonalFinance* pf) {
 void sortTransactionByAmount(struct PersonalFinance *pf) {
     int i, j;
     int n = pf->incomeCount;
-    
+
     // Sort Income Transactions using Bubble Sort
     for (i = 0; i < n - 1; i++) {
         for (j = 0; j < n - i - 1; j++) {
@@ -192,7 +188,7 @@ void saveData(struct PersonalFinance pf, const char* filename) {
 
     // Save income and expense data
     fprintf(file, "%f %f\n", pf.income, pf.expense);
-    
+
     // Save income transactions
     fprintf(file, "%d\n", pf.incomeCount);
     for (int i = 0; i < pf.incomeCount; i++) {
@@ -219,15 +215,15 @@ void loadData(struct PersonalFinance *pf, const char* filename) {
         return;
     }
 
-    
+
     // Load income and expense data
     fscanf(file, "%f %f\n", &pf->income, &pf->expense);
-    
+
     // Load income transactions
     fscanf(file, "%d\n", &pf->incomeCount);
     for (int i = 0; i < pf->incomeCount; i++) {
         struct Transaction t;
-        fscanf(file, "%d %d %d %d %d %253s %f\n", 
+        fscanf(file, "%d %d %d %d %d %253s %f\n",
                &t.year, &t.month, &t.day, (int*)&t.type, (int*)&t.category, t.description, &t.amount);
         pf->transaction_Income[i] = t;
     }
@@ -236,7 +232,7 @@ void loadData(struct PersonalFinance *pf, const char* filename) {
     fscanf(file, "%d\n", &pf->expenseCount);
     for (int i = 0; i < pf->expenseCount; i++) {
         struct Transaction t;
-        fscanf(file, "%d %d %d %d %d %253s %f\n", 
+        fscanf(file, "%d %d %d %d %d %253s %f\n",
                &t.year, &t.month, &t.day, (int*)&t.type, (int*)&t.category, t.description, &t.amount);
         pf->transaction_Expense[i] = t;
     }
