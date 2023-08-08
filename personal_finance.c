@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #define TRANSACTIONS 100
 #define DESC_MAX_LENGTH 50
@@ -13,10 +14,11 @@ struct Transaction {
     char type[DESC_MAX_LENGTH];
     char category[DESC_MAX_LENGTH];
     float amount;
+    bool status;
 };
 
 struct Transaction* createTransaction(int TransactionId, int year, int month, int day,
-                                       char type[DESC_MAX_LENGTH], char category[DESC_MAX_LENGTH], float amount) {
+                                       char type[DESC_MAX_LENGTH], char category[DESC_MAX_LENGTH], float amount, bool status) {
     struct Transaction* newTransaction = (struct Transaction*)malloc(sizeof(struct Transaction));
     newTransaction->year = year;
     newTransaction->month = month;
@@ -25,6 +27,7 @@ struct Transaction* createTransaction(int TransactionId, int year, int month, in
     strcpy(newTransaction->type, type);
     strcpy(newTransaction->category,category);
     newTransaction->amount = amount;
+    newTransaction->status = true;
     return newTransaction;
 }
 
