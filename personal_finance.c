@@ -407,11 +407,11 @@ int main() {
                 break;
             }
             case 5: {
-                viewTransactionsIncome(pf);
+                viewTransactions(pf, 1);  // 1 for Income
                 break;
             }
             case 6: {
-                viewTransactionsExpense(pf);
+                viewTransactions(pf, 2);  // 2 for Expense
                 break;
             }
             case 7: {
