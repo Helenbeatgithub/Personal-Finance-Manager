@@ -7,6 +7,16 @@ struct PersonalFinance {
     float income;
     float expense;
 };
+struct Transaction {
+    int transactionId;
+    int year;
+    int month;
+    int day;
+    char type[DESC_MAX_LENGTH];
+    char category[DESC_MAX_LENGTH];
+    float amount;
+    bool status;
+};
 void initializeDataLayer();
 void closeDataLayer();
 
