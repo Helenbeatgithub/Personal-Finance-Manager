@@ -7,7 +7,7 @@ void initializeDataLayer();
 void closeDataLayer();
 
 int* addPersonalFinance(struct PersonalFinance* pf); 
-int* addTransaction(int personal_finance_id，struct Transaction* t);
+int* addTransaction(int personal_finance_id,struct Transaction* t);
 int* deleteTransaction(int transaction_id);
 int* updateTransaction(struct Transaction* t);
 struct PersonalFinance* loadPersonalFinanceData(int personal_finance_id);
