@@ -1,7 +1,7 @@
 #ifndef DATA_LAYER_H
 #define DATA_LAYER_H
+#include <mysql.h>
 
-#include "personal_finance.c"
 struct PersonalFinance {
     int personalFinanceId;
     float income;
