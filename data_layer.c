@@ -156,3 +156,46 @@ struct Transaction* loadAllTransactions(int personal_finance_id) {
     mysql_free_result(result);
     return transactions;
 }
+
+int getMaxTransactionId() {
+    const char *query = "SELECT MAX(transactionId) FROM transactions";
+    int maxTransactionId = 0;
+
+    if (mysql_query(conn, query) == 0) {
+        MYSQL_RES *result = mysql_store_result(conn);
+        if (result) {
+            MYSQL_ROW row = mysql_fetch_row(result);
+            if (row && row[0]) {
+                maxTransactionId = atoi(row[0]);
+            }
+            mysql_free_result(result);
+        } else {
+            fprintf(stderr, "mysql_store_result() failed\n");
+        }
+    } else {
+        fprintf(stderr, "Query error: %s\n", mysql_error(conn));
+    }
+
+    return maxTransactionId;
+}
+int getMaxPersonalFinanceId() {
+    const char *query = "SELECT MAX(personalFinanceId) FROM personal_finance";
+    int maxPersonalFinanceId = 0;
+
+    if (mysql_query(conn, query) == 0) {
+        MYSQL_RES *result = mysql_store_result(conn);
+        if (result) {
+            MYSQL_ROW row = mysql_fetch_row(result);
+            if (row && row[0]) {
+                maxPersonalFinanceId = atoi(row[0]);
+            }
+            mysql_free_result(result);
+        } else {
+            fprintf(stderr, "mysql_store_result() failed\n");
+        }
+    } else {
+        fprintf(stderr, "Query error: %s\n", mysql_error(conn));
+    }
+
+    return maxPersonalFinanceId;
+}
