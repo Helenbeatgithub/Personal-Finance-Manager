@@ -213,25 +213,51 @@ void viewTransactionsAmount(struct PersonalFinance *pf) {
     }
 }
 
-void viewTransactionsIncome(struct PersonalFinance *pf) {
-    printf("Income Transactions:\n");
-    for (int i = 0; i < pf->incomeIndex; i++) {
-        printf("Date: %d/%d/%d\n", pf->transaction_Income[i]->year, pf->transaction_Income[i]->month, pf->transaction_Income[i]->day);
-        printf("Type: Income\n");
-        printf("Category: %s\n", pf->transaction_Income[i]->category);
-        printf("Amount: $%.2f\n\n", pf->transaction_Income[i]->amount);
+// void viewTransactionsIncome(struct PersonalFinance *pf) {
+//     printf("Income Transactions:\n");
+//     for (int i = 0; i < pf->incomeIndex; i++) {
+//         printf("Date: %d/%d/%d\n", pf->transaction_Income[i]->year, pf->transaction_Income[i]->month, pf->transaction_Income[i]->day);
+//         printf("Type: Income\n");
+//         printf("Category: %s\n", pf->transaction_Income[i]->category);
+//         printf("Amount: $%.2f\n\n", pf->transaction_Income[i]->amount);
+//     }
+// }
+
+// void viewTransactionsExpense(struct PersonalFinance *pf) {
+//     printf("Expense Transactions:\n");
+//     for (int i = 0; i < pf->expenseIndex; i++) {
+//         printf("Date: %d/%d/%d\n", pf->transaction_Expense[i]->year, pf->transaction_Expense[i]->month, pf->transaction_Expense[i]->day);
+//         printf("Type: Income\n");
+//         printf("Category: %s\n", pf->transaction_Expense[i]->category);
+//         printf("Amount: $%.2f\n\n", pf->transaction_Expense[i]->amount);
+//     }
+// }
+
+void viewTransactions(struct PersonalFinance *pf, int type) {
+    struct Transaction **transactionList;
+    int transactionCount;
+
+    if (type == 1) {  // Income type
+        printf("Income Transactions:\n");
+        transactionList = pf->transaction_Income;
+        transactionCount = pf->incomeIndex;
+    } else if (type == 2) {  // Expense type
+        printf("Expense Transactions:\n");
+        transactionList = pf->transaction_Expense;
+        transactionCount = pf->expenseIndex;
+    } else {
+        printf("Error: Invalid transaction type.\n");
+        return;
+    }
+
+    for (int i = 0; i < transactionCount; i++) {
+        printf("Date: %d/%d/%d\n", transactionList[i]->year, transactionList[i]->month, transactionList[i]->day);
+        printf("Type: %s\n", (type == 1) ? "Income" : "Expense");
+        printf("Category: %s\n", transactionList[i]->category);
+        printf("Amount: $%.2f\n\n", transactionList[i]->amount);
     }
 }
 
-void viewTransactionsExpense(struct PersonalFinance *pf) {
-    printf("Expense Transactions:\n");
-    for (int i = 0; i < pf->expenseIndex; i++) {
-        printf("Date: %d/%d/%d\n", pf->transaction_Expense[i]->year, pf->transaction_Expense[i]->month, pf->transaction_Expense[i]->day);
-        printf("Type: Income\n");
-        printf("Category: %s\n", pf->transaction_Expense[i]->category);
-        printf("Amount: $%.2f\n\n", pf->transaction_Expense[i]->amount);
-    }
-}
 
 float viewBalance(struct PersonalFinance *pf) {
     return pf->income - pf->expense;
