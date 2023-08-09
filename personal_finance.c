@@ -389,12 +389,12 @@ int main() {
         switch (choice) {
             case 1: {
                 struct Transaction* t = inputTransactionDetails("Income");
-                addTransactionIncome(pf, t);
+                addPersonalFinanceTransaction(pf, t, 1); // 1 for Income
                 break;
             }
             case 2: {
                 struct Transaction* t = inputTransactionDetails("Expense");
-                addTransactionExpense(pf, t);
+                addPersonalFinanceTransaction(pf, t, 2); // 2 for Expense
                 break;
             }
 
