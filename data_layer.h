@@ -2,7 +2,11 @@
 #define DATA_LAYER_H
 
 #include "personal_finance.c"
-
+struct PersonalFinance {
+    int personalFinanceId;
+    float income;
+    float expense;
+};
 void initializeDataLayer();
 void closeDataLayer();
 
