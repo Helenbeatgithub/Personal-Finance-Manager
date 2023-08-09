@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include "data_layer.h"
 
 #define TRANSACTIONS 100
 #define DESC_MAX_LENGTH 50
@@ -322,7 +323,7 @@ void updateTransaction(struct PersonalFinance *pf, int index, int type, int year
 
 
 int main() {
-
+    initializeDataLayer();
 
     struct PersonalFinance *pf = createPersonalFinance();
 
