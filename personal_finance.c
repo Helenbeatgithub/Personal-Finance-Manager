@@ -289,35 +289,71 @@ void freePersonalFinance(struct PersonalFinance* pf) {
     free(pf);
 }
 
-void deleteExpense(struct PersonalFinance *pf, int index) {
-    if (index >= 0 && index < pf->expenseIndex) {
-        pf->expense -= pf->transaction_Expense[index]->amount;
+// void deleteExpense(struct PersonalFinance *pf, int index) {
+//     if (index >= 0 && index < pf->expenseIndex) {
+//         pf->expense -= pf->transaction_Expense[index]->amount;
 
-        // Shift the remaining transactions to fill the gap
-        for (int i = index; i < pf->expenseIndex - 1; i++) {
-            pf->transaction_Expense[i] = pf->transaction_Expense[i + 1];
-        }
+//         // Shift the remaining transactions to fill the gap
+//         for (int i = index; i < pf->expenseIndex - 1; i++) {
+//             pf->transaction_Expense[i] = pf->transaction_Expense[i + 1];
+//         }
 
-        pf->expenseIndex--;
+//         pf->expenseIndex--;
+//     } else {
+//         printf("Error: Expense ID %d not found.\n", index);
+//     }
+// }
+
+// void deleteIncome(struct PersonalFinance *pf, int index) {
+//     if (index >= 0 && index < pf->incomeIndex) {
+//         pf->income -= pf->transaction_Income[index]->amount;
+
+//         // Shift the remaining transactions to fill the gap
+//         for (int i = index; i < pf->incomeIndex - 1; i++) {
+//             pf->transaction_Income[i] = pf->transaction_Income[i + 1];
+//         }
+
+//         pf->incomeIndex--;
+//     } else {
+//         printf("Error: Income ID %d not found.\n", index);
+//     }
+// }
+
+
+//deleteTransaction function marks a transaction as deleted (using the status flag) 
+//instead of actually removing it from memory or the list
+//, which is a good practice for certain financial applications to maintain a history or audit trail.
+void deleteTransaction(struct PersonalFinance *pf, int index, int type) {
+    struct Transaction **transactionList;
+    int *transactionCount;
+    float *totalAmount;
+
+    if (type == 1) {  // Income type
+        transactionList = pf->transaction_Income;
+        transactionCount = &pf->incomeIndex;
+        totalAmount = &pf->income;
+    } else if (type == 2) {  // Expense type
+        transactionList = pf->transaction_Expense;
+        transactionCount = &pf->expenseIndex;
+        totalAmount = &pf->expense;
     } else {
-        printf("Error: Expense ID %d not found.\n", index);
+        printf("Error: Invalid transaction type.\n");
+        return;
+    }
+
+    if (index >= 0 && index < *transactionCount) {
+        if(transactionList[index]->status) {
+            transactionList[index]->status = false;  // marking as deleted
+            *totalAmount -= transactionList[index]->amount; // update the total amount since the transaction is logically deleted
+            printf("Transaction ID %d has been marked as deleted.\n", index);
+        } else {
+            printf("Transaction ID %d was already marked as deleted.\n", index);
+        }
+    } else {
+        printf("Error: Transaction ID %d not found.\n", index);
     }
 }
 
-void deleteIncome(struct PersonalFinance *pf, int index) {
-    if (index >= 0 && index < pf->incomeIndex) {
-        pf->income -= pf->transaction_Income[index]->amount;
-
-        // Shift the remaining transactions to fill the gap
-        for (int i = index; i < pf->incomeIndex - 1; i++) {
-            pf->transaction_Income[i] = pf->transaction_Income[i + 1];
-        }
-
-        pf->incomeIndex--;
-    } else {
-        printf("Error: Income ID %d not found.\n", index);
-    }
-}
 
 
 
