@@ -8,6 +8,7 @@ struct PersonalFinance {
     float expense;
 };
 struct Transaction {
+    int personalFinanceId
     int transactionId;
     int year;
     int month;
