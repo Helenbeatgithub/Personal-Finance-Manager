@@ -88,17 +88,33 @@ struct Transaction* inputTransactionDetails(const char* type) {
 
 
 
-void addTransactionIncome(struct PersonalFinance *pf, struct Transaction* t) {
-    pf->transaction_Income[pf->incomeIndex] = t;
-    pf->income += t->amount;
-    pf->incomeIndex++;
+// void addTransactionIncome(struct PersonalFinance *pf, struct Transaction* t) {
+//     pf->transaction_Income[pf->incomeIndex] = t;
+//     pf->income += t->amount;
+//     pf->incomeIndex++;
+// }
+
+// void addTransactionExpense(struct PersonalFinance *pf, struct Transaction* t) {
+//     pf->transaction_Expense[pf->expenseIndex] = t;
+//     pf->expense += t->amount;
+//     pf->expenseIndex++;
+// }
+//combine both to one addfunction:
+
+void addPersonalFinanceTransaction(struct PersonalFinance *pf, struct Transaction* t, int type) {
+    if (type == 1) {  // Income type
+        pf->transaction_Income[pf->incomeIndex] = t;
+        pf->income += t->amount;
+        pf->incomeIndex++;
+    } else if (type == 2) {  // Expense type
+        pf->transaction_Expense[pf->expenseIndex] = t;
+        pf->expense += t->amount;
+        pf->expenseIndex++;
+    } else {
+        printf("Error: Invalid transaction type.\n");
+    }
 }
 
-void addTransactionExpense(struct PersonalFinance *pf, struct Transaction* t) {
-    pf->transaction_Expense[pf->expenseIndex] = t;
-    pf->expense += t->amount;
-    pf->expenseIndex++;
-}
 
 //helper method for sorting by date
 int compareDates(struct Transaction* t1, struct Transaction* t2) {
