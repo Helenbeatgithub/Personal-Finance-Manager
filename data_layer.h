@@ -1,6 +1,10 @@
 #ifndef DATA_LAYER_H
 #define DATA_LAYER_H
 #include <mysql.h>
+#include <stdbool.h>
+
+#define DESC_MAX_LENGTH 50
+#define MAX_TRANSACTIONS 100
 
 struct PersonalFinance {
     int personalFinanceId;
@@ -8,8 +12,8 @@ struct PersonalFinance {
     float expense;
 };
 struct Transaction {
-    int personalFinanceId
     int transactionId;
+    int personalFinanceId;
     int year;
     int month;
     int day;
@@ -23,10 +27,10 @@ void closeDataLayer();
 
 int* addPersonalFinance(struct PersonalFinance* pf); 
 int* addTransaction(struct Transaction* t);
-int* deleteTransaction(int transaction_id);
+int* deleteTransaction(int transactionId);
 int* updateTransaction(struct Transaction* t);
 struct PersonalFinance* loadPersonalFinanceData(int personal_finance_id);
-struct Transaction* loadAllTransactions(int personal_finance_id);
+struct Transaction*[MAX_TRANSACTIONS] loadAllTransactions(int personal_finance_id);
 int getMaxPersonalFinanceId();
 int getMaxTransactionId();
 
