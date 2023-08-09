@@ -26,5 +26,7 @@ int* deleteTransaction(int transaction_id);
 int* updateTransaction(struct Transaction* t);
 struct PersonalFinance* loadPersonalFinanceData(int personal_finance_id);
 struct Transaction* loadAllTransactions(int personal_finance_id);
+int getMaxPersonalFinanceId();
+
 
 #endif 
