@@ -411,8 +411,14 @@ struct Transaction* inputTransactionDetails() {
     scanf("%99s", type);
     printf("Enter the transaction category:\n");
     scanf("%99s", category);
-    printf("Enter the amount of the transaction:\n");
-    scanf("%f", &amount);
+    // Ensure the user provides a non-negative value for the amount
+    do {
+        printf("Enter the amount of the transaction (must be positive):\n");
+        scanf("%f", &amount);
+        if(amount < 0) {
+            printf("Amount should be a positive value. Please try again.\n");
+        }
+    } while(amount < 0);
 
     return createTransaction(year, month, day, type, category, amount);
 }
