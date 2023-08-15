@@ -1,11 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include <time.h>
 
 #define INCOME_TRANSACTION 100
 #define EXPENSE_TRANSACTION 100
 #define DESC_MAX_LENGTH 50
+#define MAX_ID_LENGTH 50
+#define FILE_NAME "user_ids.txt"
 
 struct Transaction {
     int year;
@@ -15,6 +18,72 @@ struct Transaction {
     char category[DESC_MAX_LENGTH];
     float amount;
 };
+
+struct User {
+    char id[MAX_ID_LENGTH];
+};
+
+
+char* generateUniqueId() {
+    srand(time(0));
+    static char id[MAX_ID_LENGTH];
+    snprintf(id, MAX_ID_LENGTH, "U%d", rand());
+    return id;
+}
+
+
+
+bool idExists(const char* id) {
+    FILE *file = fopen(FILE_NAME, "r");
+    if (file != NULL) {
+        char line[MAX_ID_LENGTH];
+        while (fgets(line, sizeof(line), file)) {
+            line[strcspn(line, "\n")] = 0; // remove newline
+            if (strcmp(line, id) == 0) {
+                fclose(file);
+                return true;
+            }
+        }
+        fclose(file);
+    }
+    return false;
+}
+
+
+void saveIdToFile(const char* id) {
+    FILE *file = fopen(FILE_NAME, "a");
+    if (file != NULL) {
+        fprintf(file, "%s\n", id);
+        fclose(file);
+    }
+}
+
+
+void inputUserId(struct User* user) {
+    bool isValidId = false;
+    while (!isValidId) {
+        printf("Enter your ID (or press Enter if you don't have one): ");
+        fgets(user->id, sizeof(user->id), stdin);
+        user->id[strcspn(user->id, "\n")] = 0; // remove newline
+
+        if (strlen(user->id) == 0) {
+            strcpy(user->id, generateUniqueId());
+            printf("A new ID has been generated for you: %s\n", user->id);
+            saveIdToFile(user->id);
+            isValidId = true;
+        } else if (!idExists(user->id)) {
+            printf("Error: The entered ID doesn't exist! Please try again.\n");
+        } else {
+            isValidId = true;
+        }
+    }
+}
+
+int currentTransactionId = 0;  // Global variable to hold the current transaction ID
+
+int generateTransactionId() {
+    return ++currentTransactionId;  // Increment and return the current transaction ID
+}
 
 struct PersonalFinance {
     float income;
@@ -359,6 +428,9 @@ void freePersonalFinance(struct PersonalFinance* pf) {
 }
 
 int main() {
+    struct User currentUser;
+    inputUserId(&currentUser);
+    
     struct PersonalFinance *pf = createPersonalFinance();
     int choice;
 
